@@ -1,0 +1,530 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1338E97D0122FE3D32DDD8D5 /* MenuContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E35F70E51AA498DFFFAFF4 /* MenuContent.swift */; };
+		1DB844D5783097279EE774D5 /* TrinetraHelper in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = 0C4F5F7FD63C2B016E01C144 /* TrinetraHelper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		42E7FF887910BC1CDB0C5111 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FAE9319E4DF0237DE3D2F2 /* main.swift */; };
+		4A1B92A214D600016D2F5493 /* com.insanemesh.trinetra.helper.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 91B98F999FB0556AE3E6663E /* com.insanemesh.trinetra.helper.plist */; };
+		8B5F540E3687191B21D34330 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919AC3107CAE349452040D5 /* AppModel.swift */; };
+		E7E1A0000000000000000001 /* EyeAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E1A0000000000000000002 /* EyeAnimator.swift */; };
+		E7E1A0000000000000000003 /* LidGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E1A0000000000000000004 /* LidGuard.swift */; };
+		A0F17F44646A599CDF295D6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF3AAAB4E2BE143D7DD49F79 /* Assets.xcassets */; };
+		BA078E4C0D35DA07EB0AAA76 /* TrinetraCore in Frameworks */ = {isa = PBXBuildFile; productRef = DAAC10E38F26A545320B371A /* TrinetraCore */; };
+		BD192134C485F9765BD7DF34 /* PowerAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2A3CEA1B9BD2718ED7358E /* PowerAssertion.swift */; };
+		BDD4AD76FD59EB7A229CB432 /* TrinetraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F4BC4EF529878039375B35 /* TrinetraApp.swift */; };
+		D042833B46FA071E1817EAFE /* TrinetraCore in Frameworks */ = {isa = PBXBuildFile; productRef = 01742153933172BDFF814D57 /* TrinetraCore */; };
+		F06EE01A4272534971A3442B /* PowerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9FC0328DE776CE648A666516 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2171B6E0E71429C80C35FBE9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F172960DCE02C1BFA3CDE665;
+			remoteInfo = TrinetraHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		03E0691CE15C44EEB13BC8B4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchDaemons;
+			dstSubfolderSpec = 1;
+			files = (
+				4A1B92A214D600016D2F5493 /* com.insanemesh.trinetra.helper.plist in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		27B18186BFF322C47A6253DC /* Embed Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				1DB844D5783097279EE774D5 /* TrinetraHelper in Embed Dependencies */,
+			);
+			name = "Embed Dependencies";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		05FAE9319E4DF0237DE3D2F2 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		0C4F5F7FD63C2B016E01C144 /* TrinetraHelper */ = {isa = PBXFileReference; includeInIndex = 0; path = TrinetraHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		37BC4EC767EAF437EAD055A7 /* TrinetraCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TrinetraCore; path = Packages/TrinetraCore; sourceTree = SOURCE_ROOT; };
+		6A2A3CEA1B9BD2718ED7358E /* PowerAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerAssertion.swift; sourceTree = "<group>"; };
+		91B98F999FB0556AE3E6663E /* com.insanemesh.trinetra.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = com.insanemesh.trinetra.helper.plist; sourceTree = "<group>"; };
+		9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMonitor.swift; sourceTree = "<group>"; };
+		B85D36572956AF65600CE196 /* Trinetra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trinetra.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF3AAAB4E2BE143D7DD49F79 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D4F4BC4EF529878039375B35 /* TrinetraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrinetraApp.swift; sourceTree = "<group>"; };
+		D919AC3107CAE349452040D5 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		E7E1A0000000000000000002 /* EyeAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeAnimator.swift; sourceTree = "<group>"; };
+		E7E1A0000000000000000004 /* LidGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LidGuard.swift; sourceTree = "<group>"; };
+		DE8A9C514CF2899BBBF0D82B /* Trinetra.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Trinetra.entitlements; sourceTree = "<group>"; };
+		F6E35F70E51AA498DFFFAFF4 /* MenuContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContent.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C2400B61B09C89328128749C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA078E4C0D35DA07EB0AAA76 /* TrinetraCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E98C6FECF1F355D7BA55A4E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D042833B46FA071E1817EAFE /* TrinetraCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0935AE912A15FF28EFA4EE43 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				D919AC3107CAE349452040D5 /* AppModel.swift */,
+				BF3AAAB4E2BE143D7DD49F79 /* Assets.xcassets */,
+				E7E1A0000000000000000002 /* EyeAnimator.swift */,
+				E7E1A0000000000000000004 /* LidGuard.swift */,
+				F6E35F70E51AA498DFFFAFF4 /* MenuContent.swift */,
+				6A2A3CEA1B9BD2718ED7358E /* PowerAssertion.swift */,
+				9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */,
+				DE8A9C514CF2899BBBF0D82B /* Trinetra.entitlements */,
+				D4F4BC4EF529878039375B35 /* TrinetraApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		3D66486D17F1BB634CC4037A /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				91B98F999FB0556AE3E6663E /* com.insanemesh.trinetra.helper.plist */,
+				05FAE9319E4DF0237DE3D2F2 /* main.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		8A3A68B829D502D5EB1A2FC7 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				37BC4EC767EAF437EAD055A7 /* TrinetraCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		992B83762E2C36747F2A9A79 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B85D36572956AF65600CE196 /* Trinetra.app */,
+				0C4F5F7FD63C2B016E01C144 /* TrinetraHelper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BDC1E4C65901963933A40496 = {
+			isa = PBXGroup;
+			children = (
+				0935AE912A15FF28EFA4EE43 /* App */,
+				3D66486D17F1BB634CC4037A /* Helper */,
+				8A3A68B829D502D5EB1A2FC7 /* Packages */,
+				992B83762E2C36747F2A9A79 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6161E4DB5FF004CE4CB88A49 /* Trinetra */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D98D3580FD17823E379672D1 /* Build configuration list for PBXNativeTarget "Trinetra" */;
+			buildPhases = (
+				1828E97C407825E91C7AC2AC /* Sources */,
+				5FFC7C189A36EBACC0770596 /* Resources */,
+				03E0691CE15C44EEB13BC8B4 /* CopyFiles */,
+				E98C6FECF1F355D7BA55A4E1 /* Frameworks */,
+				27B18186BFF322C47A6253DC /* Embed Dependencies */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				52CD88807B934890732ABDED /* PBXTargetDependency */,
+			);
+			name = Trinetra;
+			packageProductDependencies = (
+				01742153933172BDFF814D57 /* TrinetraCore */,
+			);
+			productName = Trinetra;
+			productReference = B85D36572956AF65600CE196 /* Trinetra.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F172960DCE02C1BFA3CDE665 /* TrinetraHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA03D07845BBC5CBB72A4EE3 /* Build configuration list for PBXNativeTarget "TrinetraHelper" */;
+			buildPhases = (
+				E1DE4497C6322EA651591697 /* Sources */,
+				C2400B61B09C89328128749C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrinetraHelper;
+			packageProductDependencies = (
+				DAAC10E38F26A545320B371A /* TrinetraCore */,
+			);
+			productName = TrinetraHelper;
+			productReference = 0C4F5F7FD63C2B016E01C144 /* TrinetraHelper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2171B6E0E71429C80C35FBE9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					6161E4DB5FF004CE4CB88A49 = {
+						DevelopmentTeam = KNBZ4G3K97;
+						ProvisioningStyle = Automatic;
+					};
+					F172960DCE02C1BFA3CDE665 = {
+						DevelopmentTeam = KNBZ4G3K97;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BDE66036CD536BF92D34583E /* Build configuration list for PBXProject "Trinetra" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BDC1E4C65901963933A40496;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A2DB7EBB20B9148D37A5D1C7 /* XCLocalSwiftPackageReference "Packages/TrinetraCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 992B83762E2C36747F2A9A79 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6161E4DB5FF004CE4CB88A49 /* Trinetra */,
+				F172960DCE02C1BFA3CDE665 /* TrinetraHelper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5FFC7C189A36EBACC0770596 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0F17F44646A599CDF295D6F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1828E97C407825E91C7AC2AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B5F540E3687191B21D34330 /* AppModel.swift in Sources */,
+				E7E1A0000000000000000001 /* EyeAnimator.swift in Sources */,
+				E7E1A0000000000000000003 /* LidGuard.swift in Sources */,
+				1338E97D0122FE3D32DDD8D5 /* MenuContent.swift in Sources */,
+				BD192134C485F9765BD7DF34 /* PowerAssertion.swift in Sources */,
+				F06EE01A4272534971A3442B /* PowerMonitor.swift in Sources */,
+				BDD4AD76FD59EB7A229CB432 /* TrinetraApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E1DE4497C6322EA651591697 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42E7FF887910BC1CDB0C5111 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		52CD88807B934890732ABDED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F172960DCE02C1BFA3CDE665 /* TrinetraHelper */;
+			targetProxy = 9FC0328DE776CE648A666516 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2E56680B2C3FC9300D018F61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.insanemesh.trinetra.helper;
+				PRODUCT_NAME = TrinetraHelper;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		33E59D603E1AB052C033B287 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = KNBZ4G3K97;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		5D105B3329E5907F3DF91873 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/Trinetra.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Trinetra;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Animesh Basak · MIT";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.insanemesh.trinetra;
+				PRODUCT_NAME = Trinetra;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5F14B2D9EE9F478A4B2129C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/Trinetra.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Trinetra;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Animesh Basak · MIT";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.insanemesh.trinetra;
+				PRODUCT_NAME = Trinetra;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		642C963C4E0FB2B70D8A83F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = KNBZ4G3K97;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		9F95FDBA65BACB184E29FC84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.insanemesh.trinetra.helper;
+				PRODUCT_NAME = TrinetraHelper;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA03D07845BBC5CBB72A4EE3 /* Build configuration list for PBXNativeTarget "TrinetraHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F95FDBA65BACB184E29FC84 /* Debug */,
+				2E56680B2C3FC9300D018F61 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BDE66036CD536BF92D34583E /* Build configuration list for PBXProject "Trinetra" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33E59D603E1AB052C033B287 /* Debug */,
+				642C963C4E0FB2B70D8A83F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D98D3580FD17823E379672D1 /* Build configuration list for PBXNativeTarget "Trinetra" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D105B3329E5907F3DF91873 /* Debug */,
+				5F14B2D9EE9F478A4B2129C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A2DB7EBB20B9148D37A5D1C7 /* XCLocalSwiftPackageReference "Packages/TrinetraCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/TrinetraCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		01742153933172BDFF814D57 /* TrinetraCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TrinetraCore;
+		};
+		DAAC10E38F26A545320B371A /* TrinetraCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TrinetraCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 2171B6E0E71429C80C35FBE9 /* Project object */;
+}

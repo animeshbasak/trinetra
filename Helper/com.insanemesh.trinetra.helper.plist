@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.insanemesh.trinetra.helper</string>
+	<key>BundleProgram</key>
+	<string>Contents/MacOS/TrinetraHelper</string>
+	<key>MachServices</key>
+	<dict>
+		<key>com.insanemesh.trinetra.helper</key>
+		<true/>
+	</dict>
+	<key>AssociatedBundleIdentifiers</key>
+	<array>
+		<string>com.insanemesh.trinetra</string>
+	</array>
+	<!-- Runs at boot so a reboot mid-hold always resets disablesleep to 0. -->
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+</dict>
+</plist>

@@ -1,0 +1,72 @@
+# XcodeGen spec — run `xcodegen` in the repo root to create Trinetra.xcodeproj (not committed).
+name: Trinetra
+options:
+  bundleIdPrefix: com.insanemesh
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+packages:
+  TrinetraCore:
+    path: Packages/TrinetraCore
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: KNBZ4G3K97      # Personal Team (free) — need paid program to distribute
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_HARDENED_RUNTIME: YES
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+
+targets:
+  Trinetra:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+      - path: Helper/com.insanemesh.trinetra.helper.plist
+        buildPhase:
+          copyFiles:
+            destination: wrapper
+            subpath: Contents/Library/LaunchDaemons
+    dependencies:
+      - package: TrinetraCore
+        product: TrinetraCore
+      - target: TrinetraHelper
+        embed: true
+        copy:
+          destination: executables
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.insanemesh.trinetra
+        PRODUCT_NAME: Trinetra
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Trinetra
+        INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 Animesh Basak · MIT"
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_ENTITLEMENTS: App/Trinetra.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  TrinetraHelper:                       # Sprint 2 — root LaunchDaemon, embedded in Contents/MacOS
+    type: tool
+    platform: macOS
+    sources:
+      - path: Helper/main.swift
+    dependencies:
+      - package: TrinetraCore
+        product: TrinetraCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.insanemesh.trinetra.helper
+        PRODUCT_NAME: TrinetraHelper
+        SKIP_INSTALL: YES
+
+schemes:
+  Trinetra:
+    build:
+      targets:
+        Trinetra: all
+    run:
+      config: Debug

@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+.swiftpm/
+xcuserdata/
+DerivedData/
+build/
+*.log
+*.before-eye
+scripts/rename_to_trinetra.py
+CLAUDE.md.paarth-proposed
+Packages/**/.swiftpm/

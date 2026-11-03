@@ -79,12 +79,12 @@ It reads the event the agent passes on stdin, writes one line to a local session
 
 ### What gets hooked
 
-| Agent | Config file | Working | Waiting for you | Idle | Ended |
-|---|---|---|---|---|---|
-| **Claude Code** | `~/.claude/settings.json` | `UserPromptSubmit`, `PreToolUse` | `Notification` (permission prompt) | `SessionStart`, `Stop`, `Notification` (idle) | `SessionEnd` |
-| **Codex / ChatGPT** | `~/.codex/hooks.json` | `UserPromptSubmit`, `PreToolUse`, `PostToolUse` | `PermissionRequest` | `SessionStart`, `Stop`, `Interrupt` | `SessionEnd` |
-| **Gemini CLI** | `~/.gemini/settings.json` | `BeforeAgent`, `BeforeTool`, `AfterTool` | `Notification` | `SessionStart`, `AfterAgent` | `SessionEnd` |
-| **Cursor** | `~/.cursor/hooks.json` | `beforeSubmitPrompt`, `afterFileEdit`, `afterShellExecution`, `postToolUse` | – | `sessionStart`, `stop` | `sessionEnd` |
+| Agent | Config file | Working | Waiting for you | Idle / ended |
+|---|---|---|---|---|
+| **Claude Code** | `~/.claude/settings.json` | `UserPromptSubmit` `PreToolUse` | `Notification` (permission) | `SessionStart` `Stop` `Notification` (idle) / `SessionEnd` |
+| **Codex / ChatGPT** | `~/.codex/hooks.json` | `UserPromptSubmit` `PreToolUse` `PostToolUse` | `PermissionRequest` | `SessionStart` `Stop` `Interrupt` / `SessionEnd` |
+| **Gemini CLI** | `~/.gemini/settings.json` | `BeforeAgent` `BeforeTool` `AfterTool` | `Notification` | `SessionStart` `AfterAgent` / `SessionEnd` |
+| **Cursor** | `~/.cursor/hooks.json` | `beforeSubmitPrompt` `afterFileEdit` `afterShellExecution` `postToolUse` | – | `sessionStart` `stop` / `sessionEnd` |
 
 ### What each state drives
 

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  core:
+    name: CLI build + unit tests
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: Packages/TrinetraCore
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Build trinetra CLI
+        run: swift build -c release --product trinetra
+      - name: Run unit tests
+        run: swift test
+
+  app:
+    name: App + helper build (unsigned)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode
+        run: xcodebuild -version
+      - name: Build Trinetra.app and TrinetraHelper
+        run: >
+          xcodebuild -project Trinetra.xcodeproj -scheme Trinetra -configuration Debug
+          -destination 'platform=macOS'
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM=""
+          build

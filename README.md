@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/animeshbasak/trinetra/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/animeshbasak/trinetra/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-303336?style=flat-square">
   <img alt="Apple Silicon" src="https://img.shields.io/badge/Apple%20Silicon-native-303336?style=flat-square">
   <img alt="Swift" src="https://img.shields.io/badge/Swift-SwiftUI-F05138?style=flat-square">

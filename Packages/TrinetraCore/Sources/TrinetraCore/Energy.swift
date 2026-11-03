@@ -58,6 +58,8 @@ public enum EnergyEstimate {
         /// Battery percentage points not spent because the Mac slept after on-battery holds.
         public var batterySaved = 0.0
         public var holds = 0
+
+        public init() {}
     }
 
     /// Totals for holds that started on the same calendar day as `now`.

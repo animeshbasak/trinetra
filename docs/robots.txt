@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://animeshbasak.github.io/trinetra/sitemap.xml

@@ -10,7 +10,7 @@ A macOS menu bar app (SwiftUI, macOS 13+) + `trinetra` CLI that keeps the Mac aw
 
 - `Packages/TrinetraCore/` — SwiftPM: all logic (`TrinetraCore`) + CLI (`trinetra`) + tests. Must stay testable with `swift test`, no AppKit.
 - `App/` — Trinetra.app (menu bar). `Helper/` — root LaunchDaemon (Sprint 2). `project.yml` — XcodeGen.
-- `Assets/icon/` — third-eye icon sources. `scripts/` — spike + install scripts.
+- `Assets/icon/` — third-eye icon sources. `docs/` — GitHub Pages site (SEO landing page, social preview). `scripts/` — spike + install scripts.
 
 ## Status (1 Nov 2026)
 

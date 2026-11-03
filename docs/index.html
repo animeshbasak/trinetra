@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trinetra: keep your Mac awake with the lid closed while AI agents work</title>
+<meta name="description" content="Free, open-source macOS menu bar app that keeps your MacBook awake, lid closed included, while Claude Code, Codex, Gemini CLI or Cursor agents work, then lets it sleep. Session summaries and battery saved.">
+<meta name="keywords" content="keep mac awake, keep macbook awake lid closed, clamshell mode without display, prevent sleep macos, caffeinate, amphetamine alternative, claude code remote control, codex, gemini cli, cursor, ai agents, menu bar app">
+<meta name="author" content="Animesh Basak">
+<meta name="theme-color" content="#0b0b16">
+<link rel="canonical" href="https://animeshbasak.github.io/trinetra/">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/AppIcon-256.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Trinetra">
+<meta property="og:title" content="Trinetra: keeps your Mac awake while AI agents work. Lid closed too.">
+<meta property="og:description" content="Open-source macOS menu bar app. Holds your Mac awake, lid closed included, exactly while Claude Code, Codex, Gemini CLI or Cursor are working, then lets it sleep.">
+<meta property="og:url" content="https://animeshbasak.github.io/trinetra/">
+<meta property="og:image" content="https://animeshbasak.github.io/trinetra/assets/social-preview.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Trinetra: keeps your Mac awake while AI agents work. Lid closed too.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Trinetra: keeps your Mac awake while AI agents work">
+<meta name="twitter:description" content="Lid closed too. Open-source macOS menu bar app for Claude Code, Codex, Gemini CLI and Cursor.">
+<meta name="twitter:image" content="https://animeshbasak.github.io/trinetra/assets/social-preview.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Trinetra",
+  "alternateName": "Trinetra for macOS",
+  "description": "Open-source macOS menu bar app and CLI that keeps a MacBook awake, lid closed included, while AI coding agents (Claude Code, Codex, Gemini CLI, Cursor) are working, then lets it sleep.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS 13 or later",
+  "url": "https://animeshbasak.github.io/trinetra/",
+  "downloadUrl": "https://github.com/animeshbasak/trinetra",
+  "image": "https://animeshbasak.github.io/trinetra/assets/social-preview.jpg",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Animesh Basak", "url": "https://github.com/animeshbasak" },
+  "keywords": "keep mac awake, lid closed, clamshell, caffeinate, amphetamine alternative, claude code, codex, gemini cli, cursor, ai agents"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "Trinetra",
+  "codeRepository": "https://github.com/animeshbasak/trinetra",
+  "programmingLanguage": "Swift",
+  "runtimePlatform": "macOS",
+  "license": "https://opensource.org/licenses/MIT",
+  "author": { "@type": "Person", "name": "Animesh Basak" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I keep my MacBook awake with the lid closed without an external display?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Turn on Keep awake with the lid closed in Trinetra and approve its helper once in System Settings. While an agent is working or a timer runs, closing the lid won't sleep the Mac, on battery too. When the work ends, normal sleep comes back by itself." } },
+    { "@type": "Question", "name": "Does Claude Code Remote Control keep working when I close the lid?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Only while the Mac is awake. A sleeping Mac drops the session. With Trinetra's lid mode on, Remote Control and similar sessions keep running with the lid shut while the agent works." } },
+    { "@type": "Question", "name": "How is Trinetra different from Amphetamine, Caffeine or caffeinate?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Those keep the Mac awake until you stop them and can't block lid-close sleep on battery. Trinetra holds only while your agents are working, covers the lid, then releases." } },
+    { "@type": "Question", "name": "Does Trinetra read my prompts or code?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Hooks record the agent, the project folder name, the state and a short label such as a file name. There is no telemetry and nothing leaves your Mac." } }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07070d; --bg2: #0e0e1c; --card: #12121f; --line: rgba(255,255,255,.08);
+    --text: #ececf3; --muted: #a0a0b4; --dim: #6f6f86;
+    --indigo: #818cf8; --indigo-d: #6366f1; --amber: #fbbf24; --green: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--indigo); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+  html, body { overflow-x: clip; }
+  .hero > *, .split > *, .grid > * { min-width: 0; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 600; }
+  .brand img { width: 30px; height: 30px; }
+  nav .links { display: flex; gap: 22px; font-size: 14px; }
+  nav .links a { color: var(--muted); }
+
+  .hero { position: relative; padding: 56px 0 72px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  .hero::before { content: ""; position: absolute; inset: -120px 0 auto auto; width: min(720px, 100%); height: 720px; background: radial-gradient(closest-side, rgba(99,102,241,.22), transparent); pointer-events: none; z-index: -1; }
+  .eyebrow { display: inline-block; font-size: 13px; color: var(--amber); border: 1px solid rgba(251,191,36,.3); border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
+  h1 { font-size: clamp(36px, 5.4vw, 60px); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; }
+  h1 em { font-style: normal; color: var(--amber); }
+  .lede { margin-top: 20px; font-size: 18px; color: var(--muted); max-width: 34em; }
+  .cta { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 15px; }
+  .btn.primary { background: var(--text); color: #0b0b16; }
+  .btn.ghost { border: 1px solid var(--line); color: var(--text); background: rgba(255,255,255,.03); }
+  .btn:hover { text-decoration: none; opacity: .9; }
+  .agents { margin-top: 26px; font-size: 13px; color: var(--dim); }
+  .agents b { color: var(--muted); font-weight: 500; }
+  .shot img { width: 100%; height: auto; display: block; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -.025em; line-height: 1.15; }
+  .sub { color: var(--muted); margin-top: 10px; max-width: 40em; }
+
+  .grid { margin-top: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .card h3 { font-size: 16px; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 14.5px; }
+  .ico { font-size: 20px; margin-bottom: 10px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 36px; align-items: start; }
+  pre { background: #0b0b14; border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; color: #d4d4e2; }
+  pre .c { color: var(--dim); }
+  pre .g { color: var(--green); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  td code { font-size: 12.5px; color: #c7c9ff; }
+  .tablewrap { overflow-x: auto; margin-top: 30px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+  .states { margin-top: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .state { border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 14px; color: var(--muted); }
+  .state b { display: flex; align-items: center; gap: 8px; color: var(--text); margin-bottom: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  ul.checks { list-style: none; margin-top: 16px; }
+  ul.checks li { padding-left: 26px; position: relative; margin: 8px 0; color: var(--muted); }
+  ul.checks li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+  ul.checks b { color: var(--text); font-weight: 600; }
+
+  details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::after { content: "+"; color: var(--dim); }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin-top: 10px; max-width: 46em; }
+
+  footer { padding: 40px 0 56px; color: var(--dim); font-size: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-top: 24px; }
+    .grid { grid-template-columns: 1fr 1fr; }
+    .split { grid-template-columns: 1fr; }
+    .states { grid-template-columns: 1fr 1fr; }
+    nav .links a.opt { display: none; }
+  }
+  @media (max-width: 560px) {
+    .grid, .states { grid-template-columns: 1fr; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="assets/AppIcon-256.png" alt="">Trinetra</a>
+    <div class="links">
+      <a class="opt" href="#features">Features</a>
+      <a class="opt" href="#hooks">Agent hooks</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/animeshbasak/trinetra">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="eyebrow">Free and open source · macOS 13+</span>
+      <h1>Keep your Mac awake while AI agents work. <em>Lid closed too.</em></h1>
+      <p class="lede">Remote Control only works while your Mac is awake. Trinetra is a menu bar app that holds your MacBook awake exactly while Claude Code, Codex, Gemini CLI or Cursor is working, with the lid shut, on battery, then lets it sleep.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/animeshbasak/trinetra#install">Install from GitHub</a>
+        <a class="btn ghost" href="https://github.com/animeshbasak/trinetra">★ Star the repo</a>
+      </div>
+      <p class="agents">Works with <b>Claude Code</b> · <b>Codex / ChatGPT</b> · <b>Gemini CLI</b> · <b>Cursor</b> · any command</p>
+    </div>
+    <div class="shot">
+      <img src="assets/menu.webp" width="720" height="803" alt="Trinetra menu: holding awake with the lid closed, three agents with live activity and a session summary, and battery saved today">
+    </div>
+  </header>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Awake when your agents need it. Asleep when they don't.</h2>
+    <p class="sub"><code>caffeinate</code> and Amphetamine keep the Mac awake until you remember to stop them, and can't beat lid-close sleep on battery. Trinetra watches your agents instead.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">👁</div><h3>Agent-aware</h3><p>Holds while an agent works, plus a 3-minute grace period. Nothing to turn off.</p></div>
+      <div class="card"><div class="ico">💻</div><h3>Lid closed, on battery</h3><p>A single-purpose helper you approve once. Normal sleep returns when the work ends.</p></div>
+      <div class="card"><div class="ico">🧭</div><h3>Live agent list</h3><p>Every session, its project and what it's doing: "Editing LidGuard.swift", "Waiting for your approval".</p></div>
+      <div class="card"><div class="ico">📝</div><h3>Session summaries</h3><p>Prompts, files edited, commands run, approvals and active time for each agent.</p></div>
+      <div class="card"><div class="ico">🔋</div><h3>Battery saved</h3><p>Time held awake, battery used, and an estimate of what sleeping right after the work saved.</p></div>
+      <div class="card"><div class="ico">🛡</div><h3>Safe by default</h3><p>10 % battery floor, thermal cutout, 12 h cap, and a dead-man switch if the app goes quiet.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="hooks">
+  <div class="wrap">
+    <h2>Built on your agents' own hooks</h2>
+    <p class="sub">Each agent runs one tiny command at the moments that matter. It writes a line to a local file and exits 0 in milliseconds. It never blocks, never answers a permission prompt, never fails the agent.</p>
+
+    <div class="split">
+      <div>
+<pre><span class="c"># one command per agent, backs up your config first</span>
+trinetra hooks install claude
+trinetra hooks install codex
+trinetra hooks install gemini
+trinetra hooks install cursor
+
+<span class="c"># what each hook runs</span>
+trinetra hook claude working</pre>
+        <ul class="checks">
+          <li><b>Backs up first</b> to <code>&lt;file&gt;.trinetra.bak</code></li>
+          <li><b>Leaves your hooks alone.</b> Only Trinetra's entries change</li>
+          <li><b>Idempotent</b>, and uninstall removes every trace</li>
+          <li><b>No prompt text stored</b>. Only labels like a file name</li>
+        </ul>
+      </div>
+      <div>
+<pre><span class="c">$ trinetra summary</span>
+Claude Code · trinetra · working
+   6 prompts · 9 files edited · 14 commands · 42m active
+   Edited AppModel.swift, MenuContent.swift +7 more
+   Ran swift ×9, git ×4, xcodebuild
+   Read 23 files · 4 searches · asked you 2×
+
+Today: held awake 3h 10m over 4 holds, used 21 % battery
+<span class="g">Slept 5h 40m as soon as work ended ≈ 34 % battery saved</span></pre>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Agent</th><th>Config</th><th>Working</th><th>Waiting for you</th><th>Idle / ended</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>~/.claude/settings.json</code></td><td><code>UserPromptSubmit</code> <code>PreToolUse</code></td><td><code>Notification</code></td><td><code>Stop</code> <code>SessionEnd</code></td></tr>
+          <tr><td>Codex / ChatGPT</td><td><code>~/.codex/hooks.json</code></td><td><code>UserPromptSubmit</code> <code>PreToolUse</code> <code>PostToolUse</code></td><td><code>PermissionRequest</code></td><td><code>Stop</code> <code>Interrupt</code> <code>SessionEnd</code></td></tr>
+          <tr><td>Gemini CLI</td><td><code>~/.gemini/settings.json</code></td><td><code>BeforeAgent</code> <code>BeforeTool</code> <code>AfterTool</code></td><td><code>Notification</code></td><td><code>AfterAgent</code> <code>SessionEnd</code></td></tr>
+          <tr><td>Cursor</td><td><code>~/.cursor/hooks.json</code></td><td><code>beforeSubmitPrompt</code> <code>afterFileEdit</code> <code>afterShellExecution</code></td><td>–</td><td><code>stop</code> <code>sessionEnd</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="states">
+      <div class="state"><b><span class="dot" style="background:#22c55e"></span>Working</b>Held awake, lid closed too. Activity shown live.</div>
+      <div class="state"><b><span class="dot" style="background:#f59e0b"></span>Waiting</b>Held awake so you can approve from your phone.</div>
+      <div class="state"><b><span class="dot" style="background:#6b7280"></span>Idle</b>Released after the 3-minute grace period.</div>
+      <div class="state"><b><span class="dot" style="background:#374151"></span>Ended</b>Released. Summary kept for 24 hours.</div>
+    </div>
+  </div>
+</section>
+
+<section id="lid">
+  <div class="wrap split" style="margin-top:0">
+    <div>
+      <h2>Lid-closed mode without a sudoers rule</h2>
+      <p class="sub">On battery, macOS sleeps on lid close no matter what. The only switch is <code>pmset disablesleep</code>, which needs root. Trinetra's helper exposes exactly that switch and nothing else.</p>
+    </div>
+    <ul class="checks">
+      <li><b>Fixed commands only:</b> <code>pmset -a disablesleep 0</code> or <code>1</code>. No shell</li>
+      <li><b>Code-signature checked:</b> only the signed Trinetra app can call it</li>
+      <li><b>Reverts on disconnect</b>: quit, crash or rebuild restores normal sleep</li>
+      <li><b>Dead-man switch:</b> 2 minutes without a heartbeat and it reverts</li>
+      <li><b>Approved once</b> in Login Items. No password per session</li>
+    </ul>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <div style="margin-top:20px">
+      <details open><summary>How do I keep my MacBook awake with the lid closed without an external display?</summary><p>Turn on <b>Keep awake with the lid closed</b> in Trinetra and approve its helper once in System Settings › General › Login Items. While an agent is working or a timer runs, closing the lid won't sleep the Mac, on battery too. When the work ends, normal sleep comes back by itself.</p></details>
+      <details><summary>Does Claude Code Remote Control keep working when I close the lid?</summary><p>Only while the Mac is awake. A sleeping Mac drops the session. With lid mode on, Remote Control and similar sessions keep running with the lid shut while the agent works.</p></details>
+      <details><summary>How is Trinetra different from Amphetamine, Caffeine or caffeinate?</summary><p>Those keep the Mac awake until you stop them and can't block lid-close sleep on battery. Trinetra holds only while your agents are working, covers the lid, then releases, so it doesn't drain your battery overnight.</p></details>
+      <details><summary>Is it safe to run a closed MacBook?</summary><p>It uses power and makes heat. Use a hard, ventilated surface, never a closed bag. Trinetra's 10 % battery floor and thermal cutout can't be turned off.</p></details>
+      <details><summary>Does Trinetra read my prompts or code?</summary><p>No. Hooks record the agent, the project folder name, the state and a short label such as a file name. No telemetry, no network calls.</p></details>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>MIT © 2026 <a href="https://github.com/animeshbasak">Animesh Basak</a></span>
+    <span><a href="https://github.com/animeshbasak/trinetra">github.com/animeshbasak/trinetra</a></span>
+  </footer>
+</div>
+</body>
+</html>

@@ -11,6 +11,10 @@ struct MenuContent: View {
             lidControl
             Divider()
             agents
+            if !model.recentSessions.isEmpty || model.today.holds > 0 {
+                Divider()
+                earlier
+            }
             Divider()
             keepAwake
             Divider()
@@ -73,9 +77,17 @@ struct MenuContent: View {
                 Text(note).font(.caption).foregroundStyle(.orange)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            if model.lidModeOn && model.helperStatus == .needsApproval {
-                Button("Open Login Items") { model.openLoginItems() }
-                    .controlSize(.small)
+            if let error = model.helperError {
+                Text(error).font(.caption2.monospaced()).foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if model.lidModeOn && model.helperStatus != .ready {
+                HStack(spacing: 6) {
+                    Button("Open Login Items") { model.openLoginItems() }
+                    Button("Retry") { model.retryHelper() }
+                }
+                .controlSize(.small)
             }
         }
     }
@@ -105,7 +117,25 @@ struct MenuContent: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(model.liveSessions, id: \.key) { session in
-                    AgentRow(session: session)
+                    AgentRow(session: session, summary: model.summaries[session.key])
+                }
+            }
+        }
+    }
+
+    // MARK: Earlier today + battery
+
+    @ViewBuilder private var earlier: some View {
+        if !model.recentSessions.isEmpty || model.today.holds > 0 {
+            VStack(alignment: .leading, spacing: 8) {
+                if !model.recentSessions.isEmpty {
+                    Text("Earlier today").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    ForEach(model.recentSessions, id: \.key) { session in
+                        AgentRow(session: session, summary: model.summaries[session.key], finished: true)
+                    }
+                }
+                if model.today.holds > 0 {
+                    EnergyLine(day: model.today)
                 }
             }
         }
@@ -152,8 +182,37 @@ struct MenuContent: View {
 /// One open agent session: state dot, agent + project, what it's doing, and for how long.
 struct AgentRow: View {
     let session: SessionRecord
+    var summary: SessionSummary?
+    var finished = false
+    @State private var expanded = false
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            row
+            if let summary, summary.headline != "No activity yet" {
+                Button {
+                    expanded.toggle()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: expanded ? "chevron.down" : "chevron.right").font(.system(size: 8, weight: .semibold))
+                        Text(summary.headline).font(.caption)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 15)
+                if expanded {
+                    ForEach(summary.detailLines, id: \.self) { line in
+                        Text(line).font(.caption).foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.leading, 27)
+                    }
+                }
+            }
+        }
+    }
+
+    private var row: some View {
         HStack(alignment: .top, spacing: 8) {
             Circle()
                 .fill(color)
@@ -168,10 +227,12 @@ struct AgentRow: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
-                Text(session.activity ?? fallbackActivity)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                if !finished {
+                    Text(session.activity ?? fallbackActivity)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
             }
             Spacer(minLength: 4)
             Text(elapsed)
@@ -185,12 +246,14 @@ struct AgentRow: View {
         case "claude": return "Claude Code"
         case "codex": return "Codex"
         case "gemini": return "Gemini"
+        case "cursor": return "Cursor"
         case "run": return "Command"
         default: return session.agent.capitalized
         }
     }
 
     private var color: Color {
+        if finished { return .gray.opacity(0.5) }
         switch session.state {
         case .working: return .green
         case .waiting: return .orange
@@ -208,6 +271,7 @@ struct AgentRow: View {
     }
 
     private var elapsed: String {
+        if finished { return "\(DurationFormat.short(Date().timeIntervalSince(session.updatedAt))) ago" }
         let since: Date
         let label: String
         switch session.state {
@@ -222,5 +286,33 @@ struct AgentRow: View {
             label = "idle"
         }
         return "\(label) \(DurationFormat.short(Date().timeIntervalSince(since)))"
+    }
+}
+
+/// "Today: held awake 3h 10m · used 12 % · ≈ 18 % battery saved by sleeping when work ended"
+struct EnergyLine: View {
+    let day: EnergyEstimate.Day
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Today").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text(heldLine).font(.caption).foregroundStyle(.secondary)
+            if day.sleptSeconds >= 60 {
+                Text(savedLine).font(.caption).foregroundStyle(.green)
+                    .help("Estimate: time the Mac slept right after work ended × this Mac's measured awake drain. Compared with keeping it awake.")
+            }
+        }
+    }
+
+    private var heldLine: String {
+        var line = "Held awake \(DurationFormat.short(day.heldSeconds)) for agents"
+        if day.batteryUsed > 0 { line += " · used \(day.batteryUsed) % battery" }
+        return line
+    }
+
+    private var savedLine: String {
+        var line = "Slept \(DurationFormat.short(day.sleptSeconds)) as soon as work ended"
+        if day.batterySaved >= 1 { line += " · ≈ \(Int(day.batterySaved.rounded())) % battery saved" }
+        return line
     }
 }

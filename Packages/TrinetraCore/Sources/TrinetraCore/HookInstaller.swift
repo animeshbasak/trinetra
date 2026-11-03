@@ -1,15 +1,23 @@
 import Foundation
 
-/// Agents Trinetra can install hooks for. Both use the same JSON shape:
-/// `{"hooks": {"<Event>": [{"matcher": "…", "hooks": [{"type": "command", "command": "…", "timeout": N}]}]}}`
+/// Agents Trinetra can install hooks for.
+/// Claude Code, Codex and Gemini CLI share the nested shape
+/// `{"hooks": {"<Event>": [{"matcher": "…", "hooks": [{"type": "command", "command": "…", "timeout": N}]}]}}`.
+/// Cursor uses a flat shape: `{"version": 1, "hooks": {"<event>": [{"command": "…", "timeout": N}]}}`.
 public enum HookAgent: String, CaseIterable, Sendable {
-    case claude, codex
+    case claude, codex, gemini, cursor
+
+    enum Format { case nested, flat }
+
+    var format: Format { self == .cursor ? .flat : .nested }
 
     /// Path relative to the home folder.
     public var configPath: String {
         switch self {
         case .claude: return ".claude/settings.json"
         case .codex: return ".codex/hooks.json"
+        case .gemini: return ".gemini/settings.json"
+        case .cursor: return ".cursor/hooks.json"
         }
     }
 
@@ -17,6 +25,8 @@ public enum HookAgent: String, CaseIterable, Sendable {
         switch self {
         case .claude: return "Claude Code"
         case .codex: return "Codex / ChatGPT"
+        case .gemini: return "Gemini CLI"
+        case .cursor: return "Cursor"
         }
     }
 
@@ -51,6 +61,29 @@ public enum HookAgent: String, CaseIterable, Sendable {
                 Spec(event: "Interrupt", matcher: nil, state: .idle, timeout: 3),
                 Spec(event: "SessionEnd", matcher: nil, state: .ended, timeout: 3),
             ]
+        case .gemini:
+            // Gemini CLI timeouts are in milliseconds.
+            return [
+                Spec(event: "SessionStart", matcher: nil, state: .idle, timeout: 5_000),
+                Spec(event: "BeforeAgent", matcher: nil, state: .working, timeout: 5_000),
+                Spec(event: "BeforeTool", matcher: ".*", state: .working, timeout: 5_000),
+                Spec(event: "AfterTool", matcher: ".*", state: .working, timeout: 5_000),
+                Spec(event: "Notification", matcher: nil, state: .waiting, timeout: 5_000),
+                Spec(event: "AfterAgent", matcher: nil, state: .idle, timeout: 5_000),
+                Spec(event: "SessionEnd", matcher: nil, state: .ended, timeout: 5_000),
+            ]
+        case .cursor:
+            // Only observational events: Cursor's permission hooks (preToolUse, beforeShellExecution…)
+            // must answer with JSON, so Trinetra stays out of them.
+            return [
+                Spec(event: "sessionStart", matcher: nil, state: .idle),
+                Spec(event: "beforeSubmitPrompt", matcher: nil, state: .working),
+                Spec(event: "afterFileEdit", matcher: nil, state: .working),
+                Spec(event: "afterShellExecution", matcher: nil, state: .working),
+                Spec(event: "postToolUse", matcher: nil, state: .working),
+                Spec(event: "stop", matcher: nil, state: .idle),
+                Spec(event: "sessionEnd", matcher: nil, state: .ended),
+            ]
         }
     }
 }
@@ -69,18 +102,21 @@ public enum AgentHookInstaller {
         var hooks = result["hooks"] as? [String: Any] ?? [:]
         for spec in agent.specs {
             var groups = hooks[spec.event] as? [[String: Any]] ?? []
-            var group: [String: Any] = [
-                "hooks": [[
-                    "type": "command",
-                    "command": command(binary: binary, agent: agent, state: spec.state),
-                    "timeout": spec.timeout,
-                ] as [String: Any]],
-            ]
-            if let matcher = spec.matcher { group["matcher"] = matcher }
-            groups.append(group)
+            let cmd = command(binary: binary, agent: agent, state: spec.state)
+            switch agent.format {
+            case .nested:
+                var group: [String: Any] = [
+                    "hooks": [["type": "command", "command": cmd, "timeout": spec.timeout] as [String: Any]],
+                ]
+                if let matcher = spec.matcher { group["matcher"] = matcher }
+                groups.append(group)
+            case .flat:
+                groups.append(["command": cmd, "timeout": spec.timeout])
+            }
             hooks[spec.event] = groups
         }
         result["hooks"] = hooks
+        if agent.format == .flat, result["version"] == nil { result["version"] = 1 }
         return result
     }
 
@@ -93,7 +129,8 @@ public enum AgentHookInstaller {
             var kept: [[String: Any]] = []
             for var group in groups {
                 guard let entries = group["hooks"] as? [[String: Any]] else {
-                    kept.append(group)
+                    // Flat format (Cursor): the group is the hook entry itself.
+                    if !isTrinetra(group, agent: agent) { kept.append(group) }
                     continue
                 }
                 let filtered = entries.filter { !isTrinetra($0, agent: agent) }
@@ -111,7 +148,10 @@ public enum AgentHookInstaller {
         guard let hooks = settings["hooks"] as? [String: Any] else { return false }
         return hooks.values.contains { value in
             (value as? [[String: Any]])?.contains { group in
-                (group["hooks"] as? [[String: Any]])?.contains { isTrinetra($0, agent: agent) } ?? false
+                if let entries = group["hooks"] as? [[String: Any]] {
+                    return entries.contains { isTrinetra($0, agent: agent) }
+                }
+                return isTrinetra(group, agent: agent)
             } ?? false
         }
     }

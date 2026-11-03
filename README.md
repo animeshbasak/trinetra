@@ -32,9 +32,11 @@ Trinetra (Sanskrit for "three-eyed") watches your agents. While one is working o
 
 | | |
 |---|---|
-| 👁 **Agent-aware** | Awake while Claude Code or Codex is working, plus a short grace period. Nothing to remember to turn off |
+| 👁 **Agent-aware** | Awake while Claude Code, Codex / ChatGPT, Gemini CLI or Cursor is working, plus a short grace period. Nothing to remember to turn off |
 | 💻 **Lid closed** | Keeps the Mac awake with the lid shut, on battery too, through a tiny privileged helper you approve once |
-| 🧭 **See your agents** | The menu lists every open session: project, state, and what it's doing ("Editing AppModel.swift", "Running swift test", "Waiting for approval") |
+| 🧭 **See your agents** | The menu lists every open session: project, state, and what it's doing ("Editing AppModel.swift", "Running swift", "Waiting for approval") |
+| 📝 **Session summaries** | What each agent did: prompts, files edited, commands run, approvals, active time. In the menu and `trinetra summary` |
+| 🔋 **Battery saved** | How long agents kept the Mac awake, battery used, and an estimate of battery saved by sleeping as soon as the work ended |
 | ⏱ **Timers** | 30m · 1h · 2h · 4h · Until I stop, for builds, downloads or anything without hooks |
 | ▶️ **Wrap any command** | `trinetra run -- ./train.sh` holds the Mac awake while the command runs |
 | 🔋 **Safe by default** | Battery floor (10 %), thermal cutout, 12 h cap. Lid mode switches itself off when the work ends or the app quits |
@@ -45,8 +47,10 @@ Trinetra does **not** relay prompts or approve permissions. Claude and ChatGPT a
 ## How it works
 
 ```
- Claude Code ─┐ hooks
- Codex ───────┤──────▶ trinetra hook ──▶ ~/Library/Application Support/Trinetra/sessions/*.json
+ Claude Code ─┐
+ Codex ───────┤ hooks
+ Gemini CLI ──┤──────▶ trinetra hook ──▶ ~/Library/Application Support/Trinetra/sessions/*.json
+ Cursor ──────┤
  any command ─┘ trinetra run                                │
                                                             ▼
                                    Trinetra.app (menu bar) ── pure Reconciler: awake? lid? low power?
@@ -71,6 +75,8 @@ cd trinetra
 scripts/install-cli.sh                   # builds and installs ~/.local/bin/trinetra
 trinetra hooks install claude            # backs up ~/.claude/settings.json first
 trinetra hooks install codex             # optional: Codex / ChatGPT
+trinetra hooks install gemini            # optional: Gemini CLI
+trinetra hooks install cursor            # optional: Cursor
 open Trinetra.xcodeproj                  # set your signing team on both targets, then Run
 ```
 
@@ -86,7 +92,8 @@ trinetra start 2h                   Keep awake for a duration (30m, 2h, 1h30m)
 trinetra extend 30m                 Add time to the timer
 trinetra stop                       Stop holding now (new agent activity resumes)
 trinetra run -- <command>           Keep awake while a command runs
-trinetra hooks install|uninstall <claude|codex>
+trinetra summary                    What each agent did (24 h) + battery saved today
+trinetra hooks install|uninstall <claude|codex|gemini|cursor>
 ```
 
 ## Compared with
@@ -102,17 +109,17 @@ trinetra hooks install|uninstall <claude|codex>
 
 Keeping a laptop awake with the lid closed uses power and makes heat. Use a hard, ventilated surface, never a closed bag. `pmset disablesleep` also switches off macOS's own low-battery sleep, which is why Trinetra's battery floor can't be turned off.
 
-Privacy: no telemetry, no network calls. Session files hold agent name, project folder name, state and a short activity label (a file name or a command's first word), never prompt text.
+Privacy: no telemetry, no network calls. Session files and summaries hold agent name, project folder name, state and short activity labels (a file name or a command's first word), never prompt or reply text.
 
 ## Roadmap
 
 - [x] Agent-aware holds, timers, `trinetra run`
 - [x] Lid-closed mode through a privileged helper
-- [x] Claude Code and Codex hooks, live agent list
+- [x] Claude Code, Codex, Gemini CLI and Cursor hooks, live agent list
+- [x] Session summaries and battery-saved estimate
 - [x] Animated menu bar eye
 - [ ] Remote-session hold for `claude --remote-control` between prompts
 - [ ] Phone alerts (Telegram) for battery, heat, Wi-Fi and hold ended
-- [ ] Gemini CLI hooks
 - [ ] Notarized DMG + Homebrew cask
 
 ## Licence

@@ -57,6 +57,7 @@ public struct SessionStore: Sendable {
         for record in loadAll() where now.timeIntervalSince(record.updatedAt) > olderThan {
             if record.state == .ended || !isAlive(record.pid) {
                 try? FileManager.default.removeItem(at: url(for: record.key))
+                SessionLog(paths: paths).remove(key: record.key)
                 removed.append(record.key)
             }
         }

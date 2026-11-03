@@ -18,6 +18,10 @@ public struct Paths: Sendable {
     public var control: URL { base.appendingPathComponent("control.json") }
     public var settings: URL { base.appendingPathComponent("settings.json") }
     public var journal: URL { base.appendingPathComponent("journal.json") }
+    public var holds: URL { base.appendingPathComponent("holds.json") }
+
+    /// Append-only activity log for one session, next to its session file.
+    public func events(for key: String) -> URL { sessions.appendingPathComponent("\(key).events.jsonl") }
 
     /// Creates the base and sessions directories with owner-only permissions.
     public func ensureDirectories() throws {
@@ -34,6 +38,14 @@ enum JSON {
         let e = JSONEncoder()
         e.dateEncodingStrategy = .iso8601
         e.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return e
+    }()
+
+    /// Single-line encoder for JSON Lines logs.
+    static let lineEncoder: JSONEncoder = {
+        let e = JSONEncoder()
+        e.dateEncodingStrategy = .iso8601
+        e.outputFormatting = [.sortedKeys]
         return e
     }()
 

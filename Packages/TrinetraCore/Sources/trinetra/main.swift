@@ -12,8 +12,9 @@ USAGE
   trinetra extend <duration>             Add time to the timer
   trinetra stop                          Stop holding now (new activity resumes)
   trinetra run -- <command> [args…]      Keep awake while a command runs
-  trinetra hooks install <claude|codex> [--bin <path>]
-  trinetra hooks uninstall <claude|codex>
+  trinetra summary                       What each agent did (last 24 h) and battery saved today
+  trinetra hooks install <claude|codex|gemini|cursor> [--bin <path>]
+  trinetra hooks uninstall <claude|codex|gemini|cursor>
   trinetra hook <agent> <working|waiting|idle|ended>   (called by agent hooks)
 """
 
@@ -43,12 +44,15 @@ func runHook(_ args: [String]) -> Never {
         payload = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
     }
     let pid = Proc.agentPID(agent: agent)
-    let id = (payload["session_id"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "unknown-\(pid)"
-    let cwd = payload["cwd"] as? String
+    let id = HookPayload.sessionID(payload) ?? "unknown-\(pid)"
+    let cwd = HookPayload.cwd(payload)
+    let now = Date()
     do {
         let activity = ActivitySummary.describe(state: state, payload: payload)
-        try SessionStore(paths: paths).upsert(agent: agent, id: id, state: state, pid: pid, cwd: cwd,
-                                               now: Date(), activity: activity)
+        let record = try SessionStore(paths: paths).upsert(agent: agent, id: id, state: state, pid: pid, cwd: cwd,
+                                                            now: now, activity: activity)
+        let (kind, detail) = ActivitySummary.classify(state: state, payload: payload)
+        try SessionLog(paths: paths).append(SessionEvent(t: now, state: state, kind: kind, detail: detail), key: record.key)
     } catch {
         printErr("trinetra hook: \(error.localizedDescription)")
     }
@@ -154,7 +158,7 @@ func runHooks(_ args: [String]) {
         fail("trinetra hooks: expected install|uninstall <agent>\n\n\(usage)", code: 2)
     }
     guard let agent = HookAgent(rawValue: args[1]) else {
-        fail("trinetra hooks: supported agents are claude and codex", code: 2)
+        fail("trinetra hooks: supported agents are claude, codex, gemini and cursor", code: 2)
     }
     var bin = defaultBinary()
     if let i = args.firstIndex(of: "--bin"), i + 1 < args.count { bin = args[i + 1] }
@@ -196,6 +200,40 @@ func runHooks(_ args: [String]) {
     }
 }
 
+// MARK: summary
+
+func agentDisplayName(_ agent: String) -> String {
+    HookAgent(rawValue: agent)?.displayName ?? (agent == "run" ? "Command" : agent)
+}
+
+func runSummary() {
+    let now = Date()
+    let log = SessionLog(paths: paths)
+    let recent = SessionStore(paths: paths).loadAll()
+        .filter { now.timeIntervalSince($0.updatedAt) < 86_400 }
+        .sorted { $0.updatedAt > $1.updatedAt }
+    if recent.isEmpty {
+        print("No agent sessions in the last 24 hours.")
+    }
+    for s in recent {
+        let summary = SessionSummary.build(log.load(key: s.key), now: now)
+        let live = s.state != .ended && Proc.isAlive(s.pid)
+        let when = live ? s.state.rawValue : "\(DurationFormat.short(now.timeIntervalSince(s.updatedAt))) ago"
+        print("\(agentDisplayName(s.agent)) · \(s.cwdName ?? "-") · \(when)")
+        print("   \(summary.headline)")
+        for line in summary.detailLines { print("   \(line)") }
+    }
+    let day = EnergyEstimate.day(EnergyEstimate.load(from: paths), now: now)
+    if day.holds > 0 {
+        print("\nToday: held awake \(DurationFormat.short(day.heldSeconds)) over \(day.holds) hold\(day.holds == 1 ? "" : "s")"
+              + (day.batteryUsed > 0 ? ", used \(day.batteryUsed) % battery" : ""))
+        if day.sleptSeconds >= 60 {
+            print("Slept \(DurationFormat.short(day.sleptSeconds)) as soon as work ended"
+                  + (day.batterySaved >= 1 ? " ≈ \(Int(day.batterySaved.rounded())) % battery saved vs staying awake" : ""))
+        }
+    }
+}
+
 // MARK: dispatch
 
 switch arguments.first {
@@ -219,6 +257,8 @@ case "status":
     runStatus(json: arguments.contains("--json"))
 case "hooks":
     runHooks(Array(arguments.dropFirst()))
+case "summary":
+    runSummary()
 case nil, "-h", "--help", "help":
     print(usage)
 default:

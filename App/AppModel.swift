@@ -18,6 +18,13 @@ final class AppModel: ObservableObject {
     /// System `SleepDisabled` flag: true means a closed lid won't sleep the Mac.
     @Published private(set) var sleepDisabled = false
     @Published private(set) var helperStatus: LidGuard.HelperStatus = .notRegistered
+    /// Exact reason the last helper registration failed, shown in the menu.
+    @Published private(set) var helperError: String?
+    /// Summaries keyed by session key, for open and recent sessions.
+    @Published private(set) var summaries: [String: SessionSummary] = [:]
+    /// Sessions that ended (or whose process is gone) in the last 24 h, newest first.
+    @Published private(set) var recentSessions: [SessionRecord] = []
+    @Published private(set) var today = EnergyEstimate.Day()
     @Published private(set) var lidNote: String?
     @Published private(set) var batteryFloor = TrinetraCore.Settings().batteryEndPercent
     @Published private(set) var graceMinutes = Int(TrinetraCore.Settings().graceSeconds / 60)
@@ -52,6 +59,9 @@ final class AppModel: ObservableObject {
     private var sleepCheckInFlight = false
     private var timer: Timer?
     private var tickCount = 0
+    private var holds: [HoldRecord] = []
+    private var sleptAt: Date?
+    private var observers: [NSObjectProtocol] = []
 
     init() {
         try? paths.ensureDirectories()
@@ -61,6 +71,16 @@ final class AppModel: ObservableObject {
             self?.lidHeld = false
         }
         if lidModeOn { prepareHelper(openSettingsIfNeeded: false) }
+        holds = EnergyEstimate.load(from: paths)
+        // A hold left open by a crash or quit is closed at the time of the last known save.
+        if let i = holds.indices.last, holds[i].end == nil { holds[i].end = Date() }
+        let center = NSWorkspace.shared.notificationCenter
+        observers.append(center.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.sleptAt = Date() }
+        })
+        observers.append(center.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.recordWake() }
+        })
         timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
@@ -110,8 +130,20 @@ final class AppModel: ObservableObject {
             try? control.save(to: paths)
         }
 
-        if next.awake && holdStartedAt == nil { holdStartedAt = now }
-        if !next.awake { holdStartedAt = nil }
+        if next.awake && holdStartedAt == nil {
+            holdStartedAt = now
+            holds.append(HoldRecord(start: now, batteryStart: power.batteryPercent, onBatteryStart: !power.onAC))
+            saveHolds()
+        }
+        if !next.awake && holdStartedAt != nil {
+            holdStartedAt = nil
+            if let i = holds.indices.last, holds[i].end == nil {
+                holds[i].end = now
+                holds[i].batteryEnd = power.batteryPercent
+                holds[i].onBatteryEnd = !power.onAC
+                saveHolds()
+            }
+        }
 
         do {
             try assertion.set(active: next.awake, reason: "Trinetra: \(next.reasons.first ?? "agents working")")
@@ -132,6 +164,8 @@ final class AppModel: ObservableObject {
 
         applyLidMode(wanted: lidModeOn && next.awake && next.lidMode)
 
+        if tickCount % 5 == 1 { refreshSummaries(sessions: sessions, now: now) }
+
         if tickCount % 20 == 1 { // about once a minute
             claudeHooksInstalled = AppModel.checkClaudeHooks()
             store.prune(now: now, isAlive: AppModel.isAlive)
@@ -142,19 +176,65 @@ final class AppModel: ObservableObject {
 
     private func prepareHelper(openSettingsIfNeeded: Bool) {
         var status = lidGuard.status
-        if status == .notRegistered { status = lidGuard.register() }
+        helperError = nil
+        if status == .notRegistered || isUnavailable(status) {
+            let (registered, error) = lidGuard.register()
+            status = registered
+            helperError = error
+        }
         helperStatus = status
         switch status {
         case .ready:
             lidNote = nil
         case .needsApproval:
-            lidNote = "Allow “Trinetra” under System Settings › General › Login Items › Allow in the Background. One time only."
+            lidNote = "Turn on “Trinetra” (it may be listed as “Animesh Basak”) under System Settings › General › Login Items & Extensions › Allow in the Background. One time only."
             if openSettingsIfNeeded { lidGuard.openLoginItems() }
         case .notRegistered:
-            lidNote = "Couldn't register the helper. Try turning lid mode off and on."
+            lidNote = "macOS didn't register the helper." + (lidGuard.runsFromBuildFolder
+                ? " Trinetra is running from Xcode's build folder; copy it to /Applications and open it from there, then retry." : "")
         case .unavailable(let message):
             lidNote = message
         }
+    }
+
+    private func isUnavailable(_ status: LidGuard.HelperStatus) -> Bool {
+        if case .unavailable = status { return true }
+        return false
+    }
+
+    /// Menu button: try registering the helper again.
+    func retryHelper() {
+        prepareHelper(openSettingsIfNeeded: true)
+        tick()
+    }
+
+    // MARK: Summaries and energy
+
+    private func refreshSummaries(sessions: [SessionRecord], now: Date) {
+        let log = SessionLog(paths: paths)
+        var next: [String: SessionSummary] = [:]
+        let liveKeys = Set(liveSessions.map(\.key))
+        let recent = sessions
+            .filter { !liveKeys.contains($0.key) && now.timeIntervalSince($0.updatedAt) < 86_400 }
+            .sorted { $0.updatedAt > $1.updatedAt }
+        for s in liveSessions + recent {
+            next[s.key] = SessionSummary.build(log.load(key: s.key), now: now)
+        }
+        summaries = next
+        recentSessions = Array(recent.filter { (next[$0.key]?.prompts ?? 0) > 0 || (next[$0.key]?.editCount ?? 0) > 0 }.prefix(5))
+        today = EnergyEstimate.day(holds, now: now)
+    }
+
+    private func recordWake() {
+        guard let start = sleptAt else { return }
+        sleptAt = nil
+        EnergyEstimate.creditSleep(&holds, sleptAt: start, wokeAt: Date())
+        saveHolds()
+        today = EnergyEstimate.day(holds, now: Date())
+    }
+
+    private func saveHolds() {
+        try? EnergyEstimate.save(holds, to: paths)
     }
 
     func openLoginItems() { lidGuard.openLoginItems() }
@@ -233,6 +313,12 @@ final class AppModel: ObservableObject {
 
     func releaseOnQuit() {
         try? assertion.set(active: false, reason: "")
+        if let i = holds.indices.last, holds[i].end == nil {
+            holds[i].end = Date()
+            holds[i].batteryEnd = power.batteryPercent
+            holds[i].onBatteryEnd = !power.onAC
+            saveHolds()
+        }
         lidGuard.disconnect() // the helper restores normal sleep as soon as it sees the disconnect
     }
 

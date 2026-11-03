@@ -39,8 +39,12 @@ enum Proc {
         var pid = ppid
         for _ in 0..<4 {
             if let p = path(of: pid) {
-                let name = URL(fileURLWithPath: p).lastPathComponent
-                if name == agent || name == "node" || p.contains("/\(agent)/") { return pid }
+                let name = URL(fileURLWithPath: p).lastPathComponent.lowercased()
+                let lower = p.lowercased()
+                // claude/codex binaries, node-based CLIs (Gemini), and app bundles like Cursor.app.
+                if name == agent || name == "node" || lower.contains("/\(agent)/") || lower.contains("/\(agent).app/") {
+                    return pid
+                }
             }
             guard let up = parent(of: pid), up > 1 else { break }
             pid = up

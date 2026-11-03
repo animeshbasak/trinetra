@@ -300,3 +300,17 @@ No env vars required. Optional: `TRINETRA_HOME` (override state dir; tests and d
 - The helper runs only `/usr/bin/pmset -a disablesleep 0|1` (fixed argv), accepts only `com.insanemesh.trinetra` signed by team `KNBZ4G3K97`, and restores `0` when the app's connection is invalidated or interrupted, after 120 s without a heartbeat, and on every launch (it runs at boot).
 - The temporary admin-prompt guard script from 31 Oct is gone.
 - Agent rows: `SessionRecord.activity` (from `ActivitySummary`: tool + file name or the command's first word only, never prompt text) and `turnStartedAt` power the menu's "Agents" list (state dot, project, activity, elapsed).
+
+---
+
+## 14. More agents, session summaries, battery saved (3 Nov 2026)
+
+**Agents.** `HookAgent` covers Claude Code (`~/.claude/settings.json`), Codex (`~/.codex/hooks.json`), Gemini CLI (`~/.gemini/settings.json`, timeouts in ms) and Cursor (`~/.cursor/hooks.json`, flat `{version: 1, hooks: {event: [{command}]}}`). Cursor gets only observational events (`sessionStart`, `beforeSubmitPrompt`, `afterFileEdit`, `afterShellExecution`, `postToolUse`, `stop`, `sessionEnd`), never its permission hooks, which must answer with JSON. `HookPayload` maps `session_id`/`conversation_id` and `cwd`/`workspace_roots[0]`. Agent pid matching is case-insensitive and also matches `/<agent>.app/` in the process path.
+
+**Session log.** Every hook call appends one `SessionEvent {t, state, kind, detail}` line to `sessions/<key>.events.jsonl` (trimmed to its newest half past 256 KB, removed with the session on prune). `kind` comes from `ActivitySummary.classify`: prompt, edit, read, command, search, web, subagent, plan, tool, approval, turnEnd, start, end, progress. Post-tool events are `progress`, so a tool is counted once. `detail` is a file name or a command's first word, never prompt or reply text.
+
+**Summary.** `SessionSummary.build(events, now)` (pure): prompts, turns, approvals, unique files edited, commands by first word, reads, searches, web lookups, subagents, and active time (working spans between events, each capped at 30 min). Shown under each agent row (tap for details), for sessions that ended in the last 24 h ("Earlier today"), and by `trinetra summary`.
+
+**Battery saved.** The app writes a `HoldRecord {start, end, batteryStart/End, onBatteryStart/End, sleptAfterSeconds}` per continuous hold to `holds.json` (newest 200). Sleep that starts within 15 min of a hold ending (NSWorkspace will-sleep / did-wake) is credited to that hold. `EnergyEstimate.day`: held time, battery used on battery, slept time, and saved ≈ slept hours × this Mac's measured awake drain (%/h from on-battery holds of 15+ min; 8 %/h until measured), capped at the battery level. Always labelled an estimate, compared with keeping the Mac awake.
+
+**Helper diagnostics.** `LidGuard.register()` returns the SMAppService error text (domain + code), checks the plist and helper binary exist in the bundle first, and the menu shows the error with Open Login Items and Retry. Registering from Xcode's DerivedData build folder is flagged; copying Trinetra.app to /Applications is the documented fix.

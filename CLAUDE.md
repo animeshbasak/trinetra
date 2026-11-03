@@ -14,7 +14,7 @@ A macOS menu bar app (SwiftUI, macOS 13+) + `trinetra` CLI that keeps the Mac aw
 
 ## Status (1 Nov 2026)
 
-Sprint 1 done, lid mode now runs through the SMAppService helper (LLD §13). Next: remote-session hold, Telegram alerts, Gemini hooks.
+Sprint 1 done, lid mode runs through the SMAppService helper (LLD §13). Gemini CLI + Cursor hooks, session summaries and battery-saved estimate added (LLD §14). Next: remote-session hold, Telegram alerts.
 
 ## Original sprint 0 → 1 notes
 

@@ -34,16 +34,36 @@ final class LidGuard {
     }
 
     /// Registers the helper. macOS then asks the user to allow it once in Login Items.
+    /// Returns the resulting status and, when registration threw, a readable reason.
     @discardableResult
-    func register() -> HelperStatus {
+    func register() -> (HelperStatus, String?) {
+        if let problem = bundleProblem() { return (.unavailable(problem), problem) }
         do {
             try service.register()
+            return (status, nil)
         } catch {
-            // Throws when already registered or awaiting approval; the status below says which.
-            NSLog("Trinetra: helper register: %@", error.localizedDescription)
+            let ns = error as NSError
+            let reason = "\(ns.localizedDescription) (\(ns.domain) \(ns.code))"
+            NSLog("Trinetra: helper register failed: %@", reason)
+            // Already registered or awaiting approval also throw; the status says which.
+            let now = status
+            return (now, now == .ready || now == .needsApproval ? nil : reason)
         }
-        return status
     }
+
+    /// Checks the pieces SMAppService needs inside the app bundle before asking it to register.
+    func bundleProblem() -> String? {
+        let bundle = Bundle.main.bundleURL
+        let fm = FileManager.default
+        let plist = bundle.appendingPathComponent("Contents/Library/LaunchDaemons/\(HelperConstants.daemonPlistName)")
+        let helper = bundle.appendingPathComponent("Contents/MacOS/TrinetraHelper")
+        if !fm.fileExists(atPath: plist.path) { return "Helper plist missing from the app bundle (\(plist.lastPathComponent))." }
+        if !fm.isExecutableFile(atPath: helper.path) { return "Helper binary missing from Contents/MacOS." }
+        return nil
+    }
+
+    /// Where the running app lives, for diagnostics (helpers registered from Xcode's build folder are fragile).
+    var runsFromBuildFolder: Bool { Bundle.main.bundlePath.contains("/DerivedData/") }
 
     func openLoginItems() {
         SMAppService.openSystemSettingsLoginItems()

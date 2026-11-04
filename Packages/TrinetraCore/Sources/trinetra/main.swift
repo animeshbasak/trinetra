@@ -13,6 +13,8 @@ USAGE
   trinetra stop                          Stop holding now (new activity resumes)
   trinetra run -- <command> [args…]      Keep awake while a command runs
   trinetra summary                       What each agent did (last 24 h) and battery saved today
+  trinetra stats [--json]                CPU, GPU, memory, temperature, battery, power, network, disk
+  trinetra modules [enable|disable <name>]   Toolkit modules (all off by default)
   trinetra hooks install <claude|codex|gemini|cursor> [--bin <path>]
   trinetra hooks uninstall <claude|codex|gemini|cursor>
   trinetra hook <agent> <working|waiting|idle|ended>   (called by agent hooks)
@@ -234,6 +236,106 @@ func runSummary() {
     }
 }
 
+// MARK: stats
+
+func runStats(json: Bool) {
+    #if os(macOS)
+    let sampler = SystemSampler()
+    let thermal: ThermalLevel
+    switch ProcessInfo.processInfo.thermalState {
+    case .nominal: thermal = .nominal
+    case .fair: thermal = .fair
+    case .serious: thermal = .serious
+    case .critical: thermal = .critical
+    @unknown default: thermal = .serious
+    }
+    _ = sampler.sample(thermal: thermal)        // CPU and network need two readings
+    Thread.sleep(forTimeInterval: 1)
+    let s = sampler.sample(thermal: thermal)
+    if json {
+        var out: [String: Any] = ["thermal": "\(thermal)", "memoryPressure": s.memoryPressure.label]
+        if let v = s.cpu { out["cpu"] = v }
+        if !s.cpuPerCore.isEmpty { out["cpuPerCore"] = s.cpuPerCore }
+        if let v = s.gpu { out["gpu"] = v }
+        if let m = s.memory {
+            out["memory"] = ["total": m.total, "used": m.used, "cached": m.cached, "compressed": m.compressed,
+                             "swapUsed": m.swapUsed]
+        }
+        if let v = s.hottest { out["hottestC"] = v }
+        out["temperatures"] = s.temperatures.map { ["name": $0.name, "celsius": $0.celsius] }
+        if let b = s.battery {
+            var bat: [String: Any] = ["onAC": b.onAC, "charging": b.charging]
+            if let v = b.percent { bat["percent"] = v }
+            if let v = b.healthPercent { bat["healthPercent"] = v }
+            if let v = b.cycleCount { bat["cycleCount"] = v }
+            if let v = b.drawWatts { bat["drawWatts"] = v }
+            if let v = b.temperature { bat["temperatureC"] = v }
+            if let v = b.minutesRemaining { bat["minutesRemaining"] = v }
+            out["battery"] = bat
+        }
+        if let d = s.downBytesPerSec, let u = s.upBytesPerSec { out["network"] = ["downBytesPerSec": d, "upBytesPerSec": u] }
+        if let f = s.diskFree, let t = s.diskTotal { out["disk"] = ["free": f, "total": t] }
+        let data = (try? JSONSerialization.data(withJSONObject: out, options: [.prettyPrinted, .sortedKeys])) ?? Data()
+        print(String(decoding: data, as: UTF8.self))
+        return
+    }
+    func row(_ label: String, _ value: String?) {
+        guard let value else { return }
+        print("\(label.padding(toLength: 12, withPad: " ", startingAt: 0)) \(value)")
+    }
+    row("CPU", s.cpu.map { MetricFormat.percent($0) + " across \(s.cpuPerCore.count) cores" })
+    row("GPU", s.gpu.map(MetricFormat.percent))
+    row("Memory", s.memory.map { m in
+        var line = "\(MetricFormat.bytes(m.used)) of \(MetricFormat.bytes(m.total)) · pressure \(s.memoryPressure.label)"
+        if m.swapUsed > 0 { line += " · swap \(MetricFormat.bytes(m.swapUsed))" }
+        return line
+    })
+    row("Temperature", s.hottest.map { MetricFormat.celsius($0) + " hottest sensor" })
+    row("Thermal", thermal == .nominal ? nil : "\(thermal)")
+    if let b = s.battery {
+        var parts: [String] = []
+        if let p = b.percent { parts.append("\(p) %" + (b.charging ? " charging" : b.onAC ? " on power" : "")) }
+        if let h = b.healthPercent { parts.append("health \(h) %") }
+        if let c = b.cycleCount { parts.append("\(c) cycles") }
+        if let m = b.minutesRemaining { parts.append("\(DurationFormat.short(Double(m) * 60)) left") }
+        row("Battery", parts.isEmpty ? nil : parts.joined(separator: " · "))
+        row("Power", b.drawWatts.map { MetricFormat.watts($0) + (b.onAC ? " from the adapter" : " from the battery") })
+    }
+    if let d = s.downBytesPerSec, let u = s.upBytesPerSec { row("Network", "↓ \(MetricFormat.rate(d))  ↑ \(MetricFormat.rate(u))") }
+    if let f = s.diskFree, let t = s.diskTotal { row("Disk", "\(MetricFormat.bytes(f)) free of \(MetricFormat.bytes(t))") }
+    #else
+    fail("trinetra stats: macOS only")
+    #endif
+}
+
+// MARK: modules
+
+func runModules(_ args: [String]) {
+    var settings = Settings.load(from: paths)
+    if args.count >= 2, ["enable", "disable"].contains(args[0]) {
+        guard let module = Module(rawValue: args[1]) else {
+            fail("trinetra modules: unknown module \(args[1]). Run `trinetra modules` for the list.", code: 2)
+        }
+        guard module.isAvailable else {
+            fail("trinetra modules: \(module.title) arrives in phase \(module.phase); not built yet.", code: 2)
+        }
+        settings.modules.set(module, on: args[0] == "enable")
+        do { try settings.save(to: paths) } catch { fail("trinetra modules: \(error.localizedDescription)") }
+        print("\(module.title): \(args[0] == "enable" ? "on" : "off"). The app picks this up within a few seconds.")
+        return
+    }
+    guard args.isEmpty || args == ["list"] else { fail("trinetra modules: expected enable|disable <name>", code: 2) }
+    var group = ""
+    for m in Module.allCases {
+        if m.group != group {
+            group = m.group
+            print("\n\(group)")
+        }
+        let state = !m.isAvailable ? "phase \(m.phase)" : settings.modules.isOn(m) ? "on" : "off"
+        print("  \(m.rawValue.padding(toLength: 18, withPad: " ", startingAt: 0)) \(state.padding(toLength: 8, withPad: " ", startingAt: 0)) \(m.summary)")
+    }
+}
+
 // MARK: dispatch
 
 switch arguments.first {
@@ -259,6 +361,10 @@ case "hooks":
     runHooks(Array(arguments.dropFirst()))
 case "summary":
     runSummary()
+case "stats":
+    runStats(json: arguments.contains("--json"))
+case "modules":
+    runModules(Array(arguments.dropFirst()))
 case nil, "-h", "--help", "help":
     print(usage)
 default:

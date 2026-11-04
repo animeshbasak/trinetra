@@ -40,6 +40,8 @@ Claude Code Remote Control and ChatGPT/Codex already let Animesh drive agents an
 
 **Explicitly not building:** permission approvals, chat or prompt relay over Telegram. Claude and ChatGPT already do that.
 
+**Toolkit (added 4 Nov 2026):** beside the core, Trinetra grows optional modules covering a full Mac menu bar toolkit (system monitor, alerts, files and clipboard, windows, sound, everyday tools, capture, maintenance, hardware). All off by default, our own MIT code, phased in [TOOLKIT.md](TOOLKIT.md). The keep-awake core never depends on a module.
+
 ---
 
 ## 3. System Overview

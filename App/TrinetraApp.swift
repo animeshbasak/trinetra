@@ -6,10 +6,15 @@ struct TrinetraApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuContent(model: model)
+            MenuContent(model: model, monitor: model.monitor)
         } label: {
-            Image(model.menuBarIcon)
-                .accessibilityLabel(model.headline)
+            HStack(spacing: 4) {
+                Image(model.menuBarIcon)
+                if let text = model.readoutText {
+                    Text(text).monospacedDigit()
+                }
+            }
+            .accessibilityLabel(model.headline)
         }
         .menuBarExtraStyle(.window)
     }

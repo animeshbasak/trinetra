@@ -30,6 +30,11 @@ final class AppModel: ObservableObject {
     @Published private(set) var graceMinutes = Int(TrinetraCore.Settings().graceSeconds / 60)
     /// Current frame of the animated menu bar eye (mirrors `eye.frameName`).
     @Published private(set) var eyeFrame = "MenuBarEye4"
+    /// Toolkit modules the user turned on, and the menu bar readout (settings.json).
+    @Published private(set) var modules = ModuleSet()
+    @Published private(set) var menuBarReadout: MenuBarReadout = .none
+    /// Text beside the eye, from the system monitor; nil shows the eye alone.
+    @Published private(set) var readoutText: String?
 
     /// User preference: keep the Mac awake with the lid closed while holding.
     @Published var lidModeOn: Bool = UserDefaults.standard.bool(forKey: "lidModeOn") {
@@ -46,6 +51,7 @@ final class AppModel: ObservableObject {
     }
 
     let eye = EyeAnimator()
+    let monitor = SystemMonitor()
     var lidProtected: Bool { sleepDisabled }
 
     let paths = Paths.default()
@@ -66,6 +72,7 @@ final class AppModel: ObservableObject {
     init() {
         try? paths.ensureDirectories()
         eye.$frameName.assign(to: &$eyeFrame)
+        monitor.onReadoutChange = { [weak self] text in self?.readoutText = text }
         lidGuard.onDisconnect = { [weak self] in
             // The helper reverts on disconnect; the next tick re-asks if lid mode is still wanted.
             self?.lidHeld = false
@@ -154,6 +161,8 @@ final class AppModel: ObservableObject {
 
         decision = next
         eye.setAwake(next.awake)
+        modules = settings.modules
+        menuBarReadout = settings.menuBarReadout
         timerEnd = control.timerEnd.flatMap { $0 > now ? $0 : nil }
         liveSessions = sessions
             .filter { $0.state != .ended && AppModel.isAlive($0.pid) }
@@ -163,6 +172,7 @@ final class AppModel: ObservableObject {
             }
 
         applyLidMode(wanted: lidModeOn && next.awake && next.lidMode)
+        monitor.configure(settings: settings, sessions: liveSessions, thermal: power.thermal)
 
         if tickCount % 5 == 1 { refreshSummaries(sessions: sessions, now: now) }
 
@@ -308,6 +318,22 @@ final class AppModel: ObservableObject {
         var control = ControlState.load(from: paths)
         control.stop(now: Date())
         try? control.save(to: paths)
+        tick()
+    }
+
+    // MARK: Modules
+
+    func setModule(_ module: Module, on: Bool) {
+        var settings = TrinetraCore.Settings.load(from: paths)
+        settings.modules.set(module, on: on)
+        try? settings.save(to: paths)
+        tick()
+    }
+
+    func setReadout(_ readout: MenuBarReadout) {
+        var settings = TrinetraCore.Settings.load(from: paths)
+        settings.menuBarReadout = readout
+        try? settings.save(to: paths)
         tick()
     }
 

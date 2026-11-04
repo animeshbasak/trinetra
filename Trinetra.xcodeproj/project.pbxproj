@@ -20,6 +20,9 @@
 		BDD4AD76FD59EB7A229CB432 /* TrinetraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F4BC4EF529878039375B35 /* TrinetraApp.swift */; };
 		D042833B46FA071E1817EAFE /* TrinetraCore in Frameworks */ = {isa = PBXBuildFile; productRef = 01742153933172BDFF814D57 /* TrinetraCore */; };
 		F06EE01A4272534971A3442B /* PowerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */; };
+		B6E822843909281EB0EACC59 /* ModulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D97056E882C54C3E3F45850 /* ModulesView.swift */; };
+		DEEDEC3D12218DBF6AAB1E26 /* SystemSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25C7EB5DA1AD9CFBACFDE25 /* SystemSection.swift */; };
+		820594C999D4E435E6073B0C /* SystemMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD90F08D5ED38C8F8A4C11E0 /* SystemMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +65,9 @@
 		37BC4EC767EAF437EAD055A7 /* TrinetraCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TrinetraCore; path = Packages/TrinetraCore; sourceTree = SOURCE_ROOT; };
 		6A2A3CEA1B9BD2718ED7358E /* PowerAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerAssertion.swift; sourceTree = "<group>"; };
 		91B98F999FB0556AE3E6663E /* com.insanemesh.trinetra.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = com.insanemesh.trinetra.helper.plist; sourceTree = "<group>"; };
+		BD90F08D5ED38C8F8A4C11E0 /* SystemMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMonitor.swift; sourceTree = "<group>"; };
+		F25C7EB5DA1AD9CFBACFDE25 /* SystemSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSection.swift; sourceTree = "<group>"; };
+		9D97056E882C54C3E3F45850 /* ModulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModulesView.swift; sourceTree = "<group>"; };
 		9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMonitor.swift; sourceTree = "<group>"; };
 		B85D36572956AF65600CE196 /* Trinetra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trinetra.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3AAAB4E2BE143D7DD49F79 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -103,6 +109,9 @@
 				F6E35F70E51AA498DFFFAFF4 /* MenuContent.swift */,
 				6A2A3CEA1B9BD2718ED7358E /* PowerAssertion.swift */,
 				9A08B3DA271757E7303CB1B3 /* PowerMonitor.swift */,
+				9D97056E882C54C3E3F45850 /* ModulesView.swift */,
+				F25C7EB5DA1AD9CFBACFDE25 /* SystemSection.swift */,
+				BD90F08D5ED38C8F8A4C11E0 /* SystemMonitor.swift */,
 				DE8A9C514CF2899BBBF0D82B /* Trinetra.entitlements */,
 				D4F4BC4EF529878039375B35 /* TrinetraApp.swift */,
 			);
@@ -254,6 +263,9 @@
 				1338E97D0122FE3D32DDD8D5 /* MenuContent.swift in Sources */,
 				BD192134C485F9765BD7DF34 /* PowerAssertion.swift in Sources */,
 				F06EE01A4272534971A3442B /* PowerMonitor.swift in Sources */,
+				B6E822843909281EB0EACC59 /* ModulesView.swift in Sources */,
+				DEEDEC3D12218DBF6AAB1E26 /* SystemSection.swift in Sources */,
+				820594C999D4E435E6073B0C /* SystemMonitor.swift in Sources */,
 				BDD4AD76FD59EB7A229CB432 /* TrinetraApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

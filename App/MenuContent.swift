@@ -3,6 +3,11 @@ import TrinetraCore
 
 struct MenuContent: View {
     @ObservedObject var model: AppModel
+    /// Observed too, so tiles and per-agent CPU update while the menu is open.
+    @ObservedObject var monitor: SystemMonitor
+
+    /// CPU per agent while the system monitor is on.
+    private var agentCPU: [String: Double] { model.modules.isOn(.systemMonitor) ? monitor.agentCPU : [:] }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -11,6 +16,10 @@ struct MenuContent: View {
             lidControl
             Divider()
             agents
+            if model.modules.isOn(.systemMonitor) {
+                Divider()
+                SystemSection(monitor: monitor)
+            }
             if !model.recentSessions.isEmpty || model.today.holds > 0 {
                 Divider()
                 earlier
@@ -18,10 +27,14 @@ struct MenuContent: View {
             Divider()
             keepAwake
             Divider()
+            ModulesView(model: model, monitor: monitor)
+            Divider()
             footer
         }
         .padding(14)
         .frame(width: 330)
+        .onAppear { monitor.menuVisible = true }
+        .onDisappear { monitor.menuVisible = false }
     }
 
     // MARK: Header
@@ -117,7 +130,7 @@ struct MenuContent: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(model.liveSessions, id: \.key) { session in
-                    AgentRow(session: session, summary: model.summaries[session.key])
+                    AgentRow(session: session, summary: model.summaries[session.key], cpu: agentCPU[session.key])
                 }
             }
         }
@@ -184,6 +197,8 @@ struct AgentRow: View {
     let session: SessionRecord
     var summary: SessionSummary?
     var finished = false
+    /// CPU used by the agent and what it started (1.0 = one core), when the system monitor is on.
+    var cpu: Double?
     @State private var expanded = false
 
     var body: some View {
@@ -235,9 +250,17 @@ struct AgentRow: View {
                 }
             }
             Spacer(minLength: 4)
-            Text(elapsed)
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(elapsed)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                if let cpu, !finished {
+                    Text("\(Int((cpu * 100).rounded())) % CPU")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(cpu >= 2 ? Color.orange : Color.secondary)
+                        .help("CPU used by this agent and the commands it started. 100 % is one core.")
+                }
+            }
         }
     }
 

@@ -314,3 +314,28 @@ No env vars required. Optional: `TRINETRA_HOME` (override state dir; tests and d
 **Battery saved.** The app writes a `HoldRecord {start, end, batteryStart/End, onBatteryStart/End, sleptAfterSeconds}` per continuous hold to `holds.json` (newest 200). Sleep that starts within 15 min of a hold ending (NSWorkspace will-sleep / did-wake) is credited to that hold. `EnergyEstimate.day`: held time, battery used on battery, slept time, and saved ≈ slept hours × this Mac's measured awake drain (%/h from on-battery holds of 15+ min; 8 %/h until measured), capped at the battery level. Always labelled an estimate, compared with keeping the Mac awake.
 
 **Helper diagnostics.** `LidGuard.register()` returns the SMAppService error text (domain + code), checks the plist and helper binary exist in the bundle first, and the menu shows the error with Open Login Items and Retry. Registering from Xcode's DerivedData build folder is flagged; copying Trinetra.app to /Applications is the documented fix.
+
+---
+
+## 15. Toolkit modules, phase 1: system monitor and health alerts (4 Nov 2026)
+
+Roadmap and ground rules: [TOOLKIT.md](TOOLKIT.md). Every module is off by default.
+
+**Modules.** `Module` (TrinetraCore/Modules.swift) lists all 27 planned modules with title, summary, phase and group; `isAvailable` is `phase <= Module.builtThroughPhase` (1). `ModuleSet` is stored in `settings.json` → `modules` as an array of raw names (unknown names from newer versions are kept). Turning a module on turns on what it `requires` (health alerts → system monitor); turning one off turns off what needs it. `Settings` also gains `alerts: AlertThresholds` and `menuBarReadout` (none, cpu, temperature, power, memory, network); every new key decodes with a default, so older files keep working. `trinetra modules [enable|disable <name>]` edits the same file; the app picks it up on its next tick.
+
+**Sampling** (`TrinetraCore/SystemSampler.swift`, macOS only, no privileges, no network):
+
+| Metric | Source |
+|---|---|
+| CPU per core | `host_processor_info(PROCESSOR_CPU_LOAD_INFO)` ticks; `CPUMath.loads` between two readings (a counter that goes backwards = no data) |
+| GPU | `IOAccelerator` → `PerformanceStatistics` → `Device Utilization %` (max over GPUs) |
+| Memory | `host_statistics64(HOST_VM_INFO64)`; used = anonymous (active + inactive − purgeable − file-backed) + wired + compressed, as Activity Monitor; swap from `vm.swapusage`; pressure from `kern.memorystatus_vm_pressure_level`, else estimated |
+| Temperatures | IOHIDEventSystemClient (vendor page 0xff00, usage 5), resolved with `dlsym`; implausible readings dropped; "hottest" = max die sensor (`tdie`/CPU/GPU/SoC names) |
+| Battery | `AppleSmartBattery`: percent, charging, cycle count, health = AppleRawMaxCapacity / DesignCapacity (capped 100), voltage × amperage, temperature, time remaining (65535 = estimating → nil), `PowerTelemetryData.SystemPowerIn` for adapter draw |
+| Network | `getifaddrs` AF_LINK `if_data`, up non-loopback interfaces summed; a drop = no data |
+| Disk | `/` `volumeAvailableCapacityForImportantUsage` |
+| CPU per agent | session pid + all descendants (`proc_listallpids` + `PROC_PIDTBSDINFO` → `ProcessTree.descendants`), `proc_pid_rusage` CPU time (mach units → s via timebase), Δcpu / Δwall; 1.0 = one core |
+
+**App.** `SystemMonitor` (@MainActor) samples on a detached task: every 2 s while the menu is open or a readout is shown, every 10 s otherwise, never when the module is off (state and histories are dropped). It keeps 90-point histories (3 min at 2 s) for CPU, GPU, memory, hottest temperature, power and network. The menu shows a **System** block (six tiles with sparklines; tap for per-core bars, memory breakdown, battery health and cycles, disk, sensors, Activity Monitor) and each agent row gains "N % CPU". **Modules** at the bottom of the menu lists every module by group; unbuilt ones show their phase. The menu bar readout is pushed to `AppModel.readoutText` only when its text changes.
+
+**Alerts** (`HealthAlerts.evaluate`, pure): snapshot + thresholds + state → alerts. Defaults: CPU ≥ 90 % for 2 min (clears below 75 %), hottest sensor ≥ 95 °C (clears below 87 °C), thermal state serious/critical (clears at fair), memory pressure ≥ warning (clears at normal), < 10 GB free (clears at 12 GB), battery ≤ 20 % while draining (clears above 25 % or on power). Each condition warns once when it starts, and again only after it has cleared and 15 min have passed. Missing data never alerts. Posted with `UNUserNotificationCenter` (permission asked when the module is switched on; a denied permission is explained in the menu). Telegram delivery reuses these alerts when Sprint 3 lands.

@@ -59,6 +59,9 @@ Trinetra (Sanskrit for "three-eyed") watches your agents through their own hooks
 | ▶️ **Wrap any command** | `trinetra run -- ./train.sh` holds the Mac awake for exactly as long as the command runs |
 | 🛡 **Safe by default** | 10 % battery floor, thermal cutout, 12 h cap. Normal sleep comes back if the app quits, crashes or goes quiet for 2 minutes |
 | 🌙 **Calm** | An animated third eye in the menu bar: open while holding, a blink now and then, closed when idle. Respects Reduce Motion |
+| 🩺 **System monitor** *(module)* | CPU per core, GPU, memory and pressure, temperatures, battery health and cycles, power draw, network and disk, with sparklines, plus the CPU each agent and its commands use. Optional readout next to the eye |
+| 🔔 **Health alerts** *(module)* | A notification when the Mac stays busy, runs hot, gets throttled, runs short of memory or disk, or the battery gets low |
+| 🧩 **Modules** | A full Mac toolkit is on the way as switch-on modules: Finder cut and paste, clipboard history, window snapping, a volume mixer, a command bar, screenshots, a cleaner, fan control and more. All off by default. See the [roadmap](architecture/TOOLKIT.md) |
 | 🔒 **Private** | No telemetry, no network calls, no prompt text stored. Ever |
 
 <p align="center">
@@ -206,6 +209,8 @@ trinetra extend 30m                 Add time to the timer
 trinetra stop                       Stop holding now (new agent activity resumes)
 trinetra run -- <command>           Keep awake while a command runs
 trinetra summary                    What each agent did (24 h) + battery saved today
+trinetra stats [--json]             CPU, GPU, memory, temperature, battery, power, network, disk
+trinetra modules [enable|disable <name>]   Toolkit modules (all off by default)
 trinetra hooks install|uninstall <claude|codex|gemini|cursor>
 ```
 

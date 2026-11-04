@@ -14,7 +14,7 @@ A macOS menu bar app (SwiftUI, macOS 13+) + `trinetra` CLI that keeps the Mac aw
 
 ## Status (1 Nov 2026)
 
-Sprint 1 done, lid mode runs through the SMAppService helper (LLD §13). Gemini CLI + Cursor hooks, session summaries and battery-saved estimate added (LLD §14). Next: remote-session hold, Telegram alerts.
+Sprint 1 done, lid mode runs through the SMAppService helper (LLD §13). Gemini CLI + Cursor hooks, session summaries and battery-saved estimate added (LLD §14). Toolkit phase 1 (system monitor + health alerts, LLD §15) added 4 Nov; the full module roadmap is `architecture/TOOLKIT.md`. Next: remote-session hold, Telegram alerts, toolkit phase 2.
 
 ## Original sprint 0 → 1 notes
 
@@ -38,6 +38,7 @@ Sprint 1 done, lid mode runs through the SMAppService helper (LLD §13). Gemini 
 - Hooks must never block or fail an agent: `trinetra hook` always exits 0, fast.
 - Don't edit `~/.claude/settings.json` by hand; use `trinetra hooks install|uninstall claude`.
 - Log agent name, cwd basename, event and timestamps only. Never prompt text.
-- No telemetry, no network calls except Telegram (Sprint 3).
+- No telemetry, no network calls except Telegram (Sprint 3) and toolkit modules whose purpose is the network (speed test, app updates, Homebrew), which say so.
+- Toolkit modules are off by default; a module that is off runs nothing. Never copy code or assets from GPL projects (Vorssaint included): Trinetra is MIT.
 - Swift: strict about optionals, no force-unwraps outside tests, no new dependencies without asking.
 - Commit per sprint step with clear messages. Don't push or create the GitHub repo until Animesh says so.

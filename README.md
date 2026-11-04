@@ -29,11 +29,11 @@
   <a href="#install">Install</a> ·
   <a href="#cli">CLI</a> ·
   <a href="#faq">FAQ</a> ·
-  <a href="https://animeshbasak.github.io/trinetra/">Website</a>
+  <a href="https://trinetra.animeshbasak.com/">Website</a>
 </p>
 
 <p align="center">
-  <a href="https://animeshbasak.github.io/trinetra/#demo"><img src="docs/assets/demo.webp" width="760" alt="Demo: turning on lid mode in the Trinetra menu, the agent summary counting up, the system monitor tiles, and the Mac being released to sleep when the work ends"></a>
+  <a href="https://trinetra.animeshbasak.com/#demo"><img src="docs/assets/demo.webp" width="760" alt="Demo: turning on lid mode in the Trinetra menu, the agent summary counting up, the system monitor tiles, and the Mac being released to sleep when the work ends"></a>
 </p>
 
 ---

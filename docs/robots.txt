@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://animeshbasak.github.io/trinetra/sitemap.xml
+Sitemap: https://trinetra.animeshbasak.com/sitemap.xml

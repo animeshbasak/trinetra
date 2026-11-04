@@ -1,0 +1,258 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #e7e2d8; font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+    #m-noise { position: absolute; inset: 0; opacity: 0.05; }
+
+    /* captions, left column */
+    .m-cap { position: absolute; left: 140px; top: 400px; width: 800px; font-weight: 700; font-size: 76px; line-height: 1.08; letter-spacing: -0.02em; color: #1a1814; }
+    .m-cap .w { display: inline-block; margin-right: 0.22em; }
+    .m-cap .a { color: #b45309; }
+    .m-cap .m-sub { display: block; margin-top: 26px; font-size: 32px; font-weight: 400; letter-spacing: -0.005em; color: #4a453d; line-height: 1.35; }
+
+    /* camera + desktop */
+    #m-desk { position: absolute; left: 0; top: 0; width: 1920px; height: 2600px; }
+    #m-bar { position: absolute; left: 0; top: 0; width: 1920px; height: 56px; background: #1e1e22; color: #ececf1; font-size: 25px; font-weight: 500; }
+    #m-bar > * { position: absolute; top: 7px; }
+    #m-bar .dim, #m-clock { top: 14px; }
+    #m-bar .dim { opacity: 0.8; }
+    #m-eyecap { left: 1379px; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 14px; border-radius: 9px; }
+    #m-eyes { position: relative; width: 34px; height: 34px; }
+    #m-eyes svg { position: absolute; inset: 0; width: 34px; height: 34px; }
+    #m-readout { font-variant-numeric: tabular-nums; }
+
+    #m-panelwrap { position: absolute; left: 1014px; top: 66px; width: 792px; transform-origin: 396px 0px; }
+    #m-scale { width: 330px; transform: scale(2.4); transform-origin: 0 0; }
+    #m-panel { width: 330px; background: #2c2c30; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; color: #ececf1; box-shadow: 0 14px 36px rgba(0,0,0,0.35); }
+    .div { height: 1px; background: rgba(255,255,255,0.1); margin: 11px 0; }
+    .row { display: flex; gap: 10px; align-items: flex-start; }
+    .h { font-weight: 700; font-size: 13.5px; }
+    .cap { font-size: 12.5px; color: #a6a6b4; line-height: 1.38; }
+    .orange { color: #f59e0b; }
+    .stack { position: relative; }
+    .stack > .alt { position: absolute; left: 0; top: 0; width: 100%; }
+    .label { font-size: 12px; font-weight: 700; color: #a6a6b4; margin-bottom: 8px; }
+    .toggle { display: flex; align-items: center; justify-content: space-between; font-size: 13.5px; margin-bottom: 4px; }
+    .sw { position: relative; width: 32px; height: 19px; border-radius: 10px; background: #55555c; }
+    #m-swon { position: absolute; inset: 0; border-radius: 10px; background: #3b82f6; opacity: 0; }
+    #m-knob { position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; flex: none; }
+    .agent { font-size: 13.5px; font-weight: 700; }
+    .proj { color: #a6a6b4; font-weight: 400; }
+    .time { margin-left: auto; font-size: 12px; color: #a6a6b4; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .sum { font-size: 12.5px; color: #a6a6b4; margin: 4px 0 0 17px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .tile { position: relative; height: 66px; border-radius: 8px; background: rgba(255,255,255,0.065); padding: 8px 9px; }
+    .tile .t { font-size: 11px; color: #a6a6b4; }
+    .tile .v { font-size: 14px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .tile .v small { font-size: 11px; color: #a6a6b4; font-weight: 400; }
+    .tile svg { position: absolute; right: 8px; bottom: 7px; width: 70px; height: 20px; overflow: visible; }
+    .btns { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+    .btn { font-size: 12px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.12); color: #ececf1; }
+    .foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #75757f; }
+
+    #m-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 68px; z-index: 50; }
+  </style>
+  <div id="root" data-composition-id="menu" data-width="1920" data-height="1080">
+    <svg id="m-noise" width="1920" height="1080" data-layout-ignore><filter id="m-n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1920" height="1080" filter="url(#m-n)"/></svg>
+
+    <!-- captions -->
+    <div id="m-c1" class="m-cap clip" data-start="0.3" data-duration="3.2" data-track-index="3">
+      <span class="w">Claude</span><span class="w">is</span><span class="w">two</span><span class="w">hours</span><span class="w">into</span><span class="w">a</span><span class="w">task.</span>
+      <span class="m-sub w">You need to step away from your Mac.</span>
+    </div>
+    <div id="m-c2" class="m-cap clip" data-start="3.7" data-duration="3.4" data-track-index="3">
+      <span class="w">Close</span><span class="w">the</span><span class="w">lid.</span><span class="w">It</span><span class="w a">keeps</span><span class="w a">working.</span>
+      <span class="m-sub w">One switch. Awake with the lid shut, on battery too.</span>
+    </div>
+    <div id="m-c3" class="m-cap clip" data-start="7.3" data-duration="3.7" data-track-index="3">
+      <span class="w">See</span><span class="w">what</span><span class="w">every</span><span class="w a">agent</span><span class="w">did.</span>
+      <span class="m-sub w">Claude Code, Codex, Gemini CLI and Cursor.</span>
+    </div>
+    <div id="m-c4" class="m-cap clip" data-start="11.3" data-duration="3.9" data-track-index="3">
+      <span class="w">CPU,</span><span class="w">GPU,</span><span class="w">heat</span><span class="w">and</span><span class="w a">power.</span>
+      <span class="m-sub w">Live in the menu, with alerts when it runs hot.</span>
+    </div>
+    <div id="m-c5" class="m-cap clip" data-start="15.4" data-duration="4.6" data-track-index="3">
+      <span class="w">Work</span><span class="w">done.</span><span class="w">It</span><span class="w">lets</span><span class="w">the</span><span class="w">Mac</span><span class="w a">sleep.</span>
+      <span class="m-sub w">No timers to remember.</span>
+    </div>
+
+    <!-- desktop, moved by the camera -->
+    <div id="m-desk" data-layout-allow-overflow>
+      <div id="m-bar">
+        <div id="m-eyecap">
+          <div id="m-eyes">
+            <svg id="m-eye-open" viewBox="0 0 18 18"><path d="M9 1.4 C12.3 4.1 13.7 6.7 13.7 9 C13.7 11.3 12.3 13.9 9 16.6 C5.7 13.9 4.3 11.3 4.3 9 C4.3 6.7 5.7 4.1 9 1.4 Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9" cy="9" r="2.5" fill="#fff"/></svg>
+            <svg id="m-eye-lid" viewBox="0 0 18 18" style="opacity:0"><mask id="m-mk"><rect width="18" height="18" fill="#fff"/><ellipse cx="9" cy="9" rx="0.95" ry="2.1" fill="#000"/></mask><path d="M9 1.4 C12.3 4.1 13.7 6.7 13.7 9 C13.7 11.3 12.3 13.9 9 16.6 C5.7 13.9 4.3 11.3 4.3 9 C4.3 6.7 5.7 4.1 9 1.4 Z" fill="#fff" mask="url(#m-mk)"/></svg>
+            <svg id="m-eye-idle" viewBox="0 0 18 18" style="opacity:0"><path d="M9 2.2 C10.4 6 10.4 12 9 15.8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M9.9 5.5 L12.4 4.6 M10.3 9 L13 9 M9.9 12.5 L12.4 13.4" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <span id="m-readout">↓ 482 B/s ↑ 482 B/s</span>
+        </div>
+        <span id="m-clock" style="left:1736px">17:16</span>
+      </div>
+
+      <div id="m-panelwrap">
+        <div id="m-scale">
+          <div id="m-panel">
+            <!-- header -->
+            <div class="row">
+              <div style="position:relative;width:18px;height:18px;flex:none;margin-top:1px">
+                <svg id="m-hicon-on" width="18" height="18" viewBox="0 0 18 18"><mask id="m-mk2"><rect width="18" height="18" fill="#fff"/><ellipse cx="9" cy="9" rx="0.95" ry="2.1" fill="#000"/></mask><path d="M9 1.4 C12.3 4.1 13.7 6.7 13.7 9 C13.7 11.3 12.3 13.9 9 16.6 C5.7 13.9 4.3 11.3 4.3 9 C4.3 6.7 5.7 4.1 9 1.4 Z" fill="#fff" mask="url(#m-mk2)"/></svg>
+              </div>
+              <div style="flex:1">
+                <div class="stack">
+                  <div id="m-h1" class="h">Holding awake · keep the lid open</div>
+                  <div id="m-h2" class="h alt" style="opacity:0">Holding awake · lid can close</div>
+                  <div id="m-h3" class="h alt" style="opacity:0">Idle — Mac can sleep</div>
+                </div>
+                <div class="stack">
+                  <div id="m-warn" class="cap orange">Closing the lid will sleep the Mac. Turn on lid mode below.</div>
+                  <div id="m-reason" class="cap alt" style="opacity:0">1 agent working</div>
+                </div>
+                <div class="cap">On battery · 80 %</div>
+              </div>
+            </div>
+            <div class="div"></div>
+            <!-- lid mode -->
+            <div class="toggle"><span>Keep awake with the lid closed</span><span id="m-sw" class="sw"><span id="m-swon"></span><span id="m-knob"></span></span></div>
+            <div class="stack">
+              <div id="m-l1" class="cap">Off. Trinetra keeps the Mac awake with the lid open only.</div>
+              <div id="m-l2" class="cap alt" style="opacity:0">On. Switches off when the work ends, at 10 % battery, or if Trinetra quits.</div>
+              <div id="m-l3" class="cap alt" style="opacity:0">Ready. Kicks in whenever Trinetra is holding the Mac awake.</div>
+            </div>
+            <div class="div"></div>
+            <!-- agents -->
+            <div id="m-agents">
+              <div class="label">Agents · 1 open</div>
+              <div class="row">
+                <div style="position:relative;width:7px;flex:none"><span id="m-dot" class="dot" style="display:block;background:#22c55e"></span></div>
+                <div style="flex:1">
+                  <div class="agent">Claude Code <span class="proj">· PAARTH-TRADER</span></div>
+                  <div class="stack"><div id="m-act1" class="cap">Running python</div><div id="m-act2" class="cap alt" style="opacity:0">Waiting for your next prompt</div></div>
+                </div>
+                <div class="stack time" style="text-align:right"><div id="m-t1">working 4m</div><div id="m-t2" class="alt" style="opacity:0;text-align:right">idle 1m</div></div>
+              </div>
+              <div class="sum">▾ <span id="m-n1">44</span> prompts · <span id="m-n2">27</span> files edited · <span id="m-n3">301</span> commands · <span id="m-n4">2h 8m</span> active</div>
+            </div>
+            <div class="div"></div>
+            <!-- system -->
+            <div id="m-system">
+              <div class="label">System ›</div>
+              <div class="tiles">
+                <div class="tile"><div class="t">CPU</div><div class="v"><span id="m-v1">11</span> %</div><svg viewBox="0 0 70 20"><polyline id="m-s1" pathLength="1" fill="none" stroke="#4ade80" stroke-width="1.6" points=""/></svg></div>
+                <div class="tile"><div class="t">GPU</div><div class="v"><span id="m-v2">52</span> %</div><svg viewBox="0 0 70 20"><polyline id="m-s2" pathLength="1" fill="none" stroke="#e879f9" stroke-width="1.6" points=""/></svg></div>
+                <div class="tile"><div class="t">Memory</div><div class="v"><span id="m-v3">25.1</span> GB</div><svg viewBox="0 0 70 20"><polyline id="m-s3" pathLength="1" fill="none" stroke="#22d3ee" stroke-width="1.6" points=""/></svg></div>
+                <div class="tile"><div class="t">Temperature</div><div class="v"><span id="m-v4">42</span> °C</div><svg viewBox="0 0 70 20"><polyline id="m-s4" pathLength="1" fill="none" stroke="#fbbf24" stroke-width="1.6" points=""/></svg></div>
+                <div class="tile"><div class="t">Power · battery</div><div class="v"><span id="m-v5">17.6</span> W</div><svg viewBox="0 0 70 20"><polyline id="m-s5" pathLength="1" fill="none" stroke="#facc15" stroke-width="1.6" points=""/></svg></div>
+                <div class="tile"><div class="t">Network</div><div class="v">↓ <span id="m-v6">0</span> B/s <small>↑ 482 B/s</small></div><svg viewBox="0 0 70 20"><polyline id="m-s6" pathLength="1" fill="none" stroke="#38bdf8" stroke-width="1.6" points=""/></svg></div>
+              </div>
+            </div>
+            <div class="div"></div>
+            <!-- today -->
+            <div id="m-today">
+              <div class="label" style="margin-bottom:2px">Today</div>
+              <div class="cap">Held awake 16h 3m for agents · used 31 % battery</div>
+            </div>
+            <div class="div"></div>
+            <div class="cap">Stays awake while agents work, plus 3 min after. Add time for anything else.</div>
+            <div class="btns"><span class="btn">30m</span><span class="btn">1h</span><span class="btn">2h</span><span class="btn">4h</span><span class="btn">Until I stop</span></div>
+            <div class="div"></div>
+            <div class="foot"><span>Trinetra 0.1</span><span class="btn">Quit</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <svg id="m-cursor" viewBox="0 0 23 34" data-layout-ignore><path d="M2 1.5 L2 26 L8 20.5 L12.2 30.5 L16.4 28.7 L12.3 19 L20.5 19 Z" fill="#111" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    (function () {
+      // Sparklines: deterministic shapes, ending on the screenshot's character (flat CPU, busy GPU, a spike on network).
+      function line(id, fn) {
+        const pts = [];
+        for (let i = 0; i <= 34; i++) { const x = i * (70 / 34); pts.push(x.toFixed(1) + "," + Math.max(1, Math.min(19, fn(i))).toFixed(1)); }
+        document.querySelector(id).setAttribute("points", pts.join(" "));
+      }
+      line("#m-s1", i => 15 + Math.sin(i * 1.3) * 1.2);
+      line("#m-s2", i => 10 + Math.sin(i * 0.9) * 5 + Math.sin(i * 2.7) * 2.5);
+      line("#m-s3", i => 9.5 + Math.sin(i * 0.2) * 0.4);
+      line("#m-s4", i => 13 + Math.sin(i * 1.7) * 0.8);
+      line("#m-s5", i => i < 4 ? 19 - i * 4 : 4 + Math.sin(i * 0.8) * 0.5);
+      line("#m-s6", i => (i === 30 ? 2 : i === 31 ? 8 : 18 - Math.abs(Math.sin(i * 0.7)) * 0.8));
+
+      const tl = gsap.timeline({ paused: true });
+      const E = "expo.out", CAM = "power2.inOut";
+
+      // initial state
+      gsap.set("#m-panelwrap", { opacity: 0, scale: 0.12, y: -20 });
+      gsap.set("#m-desk", { y: 0 });
+      gsap.set("#m-cursor", { x: 760, y: 1120 });
+            ["#m-s1", "#m-s2", "#m-s3", "#m-s4", "#m-s5", "#m-s6"].forEach(s => gsap.set(s, { attr: { "stroke-dasharray": "1 1", "stroke-dashoffset": 0.5 } }));
+
+      // captions: per word blur in, hold dead still, blur out
+      function caption(id, start, dur) {
+        const words = "#" + id + " .w";
+        tl.fromTo(words, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.07, ease: "power2.out" }, start + 0.05);
+        tl.to(words, { opacity: 0, filter: "blur(6px)", duration: 0.18, stagger: 0.02, ease: "power3.in" }, start + dur - 0.42);
+      }
+      caption("m-c1", 0.3, 3.2);
+      caption("m-c2", 3.7, 3.4);
+      caption("m-c3", 7.3, 3.7);
+      caption("m-c4", 11.3, 3.9);
+      caption("m-c5", 15.4, 4.6);
+
+      // S1: cursor to the eye, click, menu opens out of the eye
+      tl.fromTo("#m-cursor", { x: 760, y: 1120 }, { x: 1402, y: 22, duration: 1.0, ease: "power3.inOut" }, 0.25);
+      tl.to("#m-cursor", { scale: 0.88, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "0 0" }, 1.3);
+      tl.to("#m-eyecap", { backgroundColor: "rgba(255,255,255,0.18)", duration: 0.1 }, 1.32);
+      tl.fromTo("#m-panelwrap", { opacity: 0, scale: 0.12, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: E }, 1.36);
+
+      // S2: cursor to the switch, click, lid mode on
+      tl.to("#m-cursor", { x: 1736, y: 341, duration: 0.7, ease: "power3.inOut" }, 3.5);
+      tl.to("#m-cursor", { scale: 0.88, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "0 0" }, 4.25);
+      tl.to("#m-knob", { x: 13, duration: 0.18, ease: "power3.out" }, 4.3);
+      tl.to("#m-swon", { opacity: 1, duration: 0.18 }, 4.3);
+      tl.to(["#m-h1", "#m-l1", "#m-warn"], { opacity: 0, filter: "blur(4px)", duration: 0.15 }, 4.38);
+      tl.fromTo(["#m-h2", "#m-l2", "#m-reason"], { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 4.5);
+      tl.to("#m-eye-open", { opacity: 0, duration: 0.12 }, 4.45);
+      tl.to("#m-eye-lid", { opacity: 1, duration: 0.12 }, 4.45);
+      tl.to("#m-cursor", { x: 1960, y: 700, duration: 0.6, ease: "power3.in" }, 5.6);
+
+      // S3: camera to Agents, summary counts up
+      tl.to("#m-desk", { y: -165, duration: 0.7, ease: CAM }, 7.0);
+      const n = { a: 44, b: 27, c: 301, d: 128 };
+      tl.fromTo(n, { a: 44, b: 27, c: 301, d: 128 }, { a: 48, b: 30, c: 336, d: 140, duration: 1.4, ease: "power2.out", onUpdate: () => {
+        document.querySelector("#m-n1").textContent = Math.round(n.a);
+        document.querySelector("#m-n2").textContent = Math.round(n.b);
+        document.querySelector("#m-n3").textContent = Math.round(n.c);
+        const m = Math.round(n.d); document.querySelector("#m-n4").textContent = (m >= 60 ? Math.floor(m / 60) + "h " : "") + (m % 60) + "m";
+      } }, 7.6);
+
+      // S4: camera to System, tiles fill, values count, sparklines draw
+      tl.to("#m-desk", { y: -620, duration: 0.7, ease: CAM }, 11.0);
+            ["#m-s1", "#m-s2", "#m-s3", "#m-s4", "#m-s5", "#m-s6"].forEach((s, i) => tl.fromTo(s, { attr: { "stroke-dashoffset": 0.5 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.4, ease: "power1.inOut" }, 11.65 + i * 0.06));
+      const v = { a: 11, b: 52, c: 25.1, d: 42, e: 17.6, f: 0 };
+      tl.fromTo(v, { a: 11, b: 52, c: 25.1, d: 42, e: 17.6, f: 0 }, { a: 13, b: 58, c: 25.2, d: 43, e: 18.3, f: 482, duration: 1.0, ease: "power2.out", onUpdate: () => {
+        document.querySelector("#m-v1").textContent = Math.round(v.a);
+        document.querySelector("#m-v2").textContent = Math.round(v.b);
+        document.querySelector("#m-v3").textContent = v.c.toFixed(1);
+        document.querySelector("#m-v4").textContent = Math.round(v.d);
+        document.querySelector("#m-v5").textContent = v.e.toFixed(1);
+        document.querySelector("#m-v6").textContent = Math.round(v.f);
+      } }, 11.65);
+
+      // S5: today line, then back to the top; the agent finishes, the eye closes
+      tl.to("#m-desk", { y: -1015, duration: 0.7, ease: CAM }, 15.2);
+      tl.fromTo("#m-today", { opacity: 0.35 }, { opacity: 1, duration: 0.4 }, 15.7);
+      tl.to("#m-desk", { y: 0, duration: 0.7, ease: CAM }, 17.0);
+      tl.to(["#m-h2", "#m-reason", "#m-l2", "#m-act1", "#m-t1"], { opacity: 0, filter: "blur(4px)", duration: 0.15 }, 17.8);
+      tl.fromTo(["#m-h3", "#m-l3", "#m-act2", "#m-t2"], { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 17.9);
+      tl.to("#m-dot", { backgroundColor: "#7a7a84", duration: 0.2 }, 17.85);
+      tl.to("#m-eye-lid", { opacity: 0, duration: 0.12 }, 17.95);
+      tl.to("#m-eye-idle", { opacity: 1, duration: 0.12 }, 17.95);
+      tl.to("#m-readout", { opacity: 0.55, duration: 0.2 }, 17.95);
+
+      window.__timelines["menu"] = tl;
+    })();
+  </script>
+</template>

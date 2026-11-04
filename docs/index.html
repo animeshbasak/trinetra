@@ -99,7 +99,7 @@
   nav .links { display: flex; gap: 22px; font-size: 14px; }
   nav .links a { color: var(--muted); }
 
-  .hero { position: relative; padding: 56px 0 72px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  .hero { position: relative; padding: 56px 0 72px; display: grid; grid-template-columns: .85fr 1.15fr; gap: 48px; align-items: center; }
   .hero::before { content: ""; position: absolute; inset: -120px 0 auto auto; width: min(720px, 100%); height: 720px; background: radial-gradient(closest-side, rgba(99,102,241,.22), transparent); pointer-events: none; z-index: -1; }
   .eyebrow { display: inline-block; font-size: 13px; color: var(--amber); border: 1px solid rgba(251,191,36,.3); border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
   h1 { font-size: clamp(36px, 5.4vw, 60px); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; }
@@ -112,7 +112,7 @@
   .btn:hover { text-decoration: none; opacity: .9; }
   .agents { margin-top: 26px; font-size: 13px; color: var(--dim); }
   .agents b { color: var(--muted); font-weight: 500; }
-  .shot img { width: 100%; height: auto; display: block; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .shot img, .shot video { width: 100%; height: auto; display: block; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
 
   section { padding: 72px 0; border-top: 1px solid var(--line); }
   h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -.025em; line-height: 1.15; }
@@ -187,7 +187,7 @@
       <p class="agents">Works with <b>Claude Code</b> · <b>Codex / ChatGPT</b> · <b>Gemini CLI</b> · <b>Cursor</b> · any command</p>
     </div>
     <div class="shot">
-      <img src="assets/menu.webp" width="720" height="803" alt="Trinetra menu: holding awake with the lid closed, three agents with live activity and a session summary, and battery saved today">
+      <video id="demo" src="assets/demo.mp4" poster="assets/demo-poster.jpg" width="1920" height="1080" autoplay muted loop playsinline aria-label="Demo: turning on lid mode in the Trinetra menu, the agent summary counting up, the system monitor tiles, and the Mac being released to sleep"></video>
     </div>
   </header>
 </div>

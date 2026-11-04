@@ -1,0 +1,33 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #e7e2d8; font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+    #e-noise { position: absolute; inset: 0; opacity: 0.05; }
+    #e-lockup { position: absolute; left: 0; top: 330px; width: 1920px; display: flex; align-items: center; justify-content: center; gap: 36px; }
+    #e-icon { width: 200px; height: 200px; }
+    #e-word { font-weight: 700; font-size: 132px; letter-spacing: -0.035em; color: #1a1814; }
+    #e-line { position: absolute; left: 0; top: 590px; width: 1920px; text-align: center; font-size: 40px; color: #4a453d; letter-spacing: -0.01em; }
+    #e-line b { color: #b45309; font-weight: 700; }
+    #e-cta { position: absolute; left: 50%; top: 680px; display: flex; align-items: center; gap: 18px; padding: 18px 30px; border-radius: 14px; background: #1e1e22; color: #ececf1; font-size: 34px; font-weight: 500; white-space: nowrap; }
+    #e-cta span { color: #9a9aa6; font-weight: 400; }
+  </style>
+  <div id="root" data-composition-id="endcard" data-width="1920" data-height="1080">
+    <svg id="e-noise" width="1920" height="1080" data-layout-ignore><filter id="e-n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1920" height="1080" filter="url(#e-n)"/></svg>
+    <div id="e-lockup">
+      <img id="e-icon" src="assets/appicon.png" alt="Trinetra app icon">
+      <div id="e-wordwrap" style="overflow:hidden"><div id="e-word">Trinetra</div></div>
+    </div>
+    <div id="e-line">Keeps your Mac awake while AI agents work. <b>Lid closed too.</b></div>
+    <div id="e-ctawrap"><div id="e-cta">github.com/animeshbasak/trinetra <span>· free, open source, macOS 13+</span></div></div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      // the eye from the menu bar lands as the app icon
+      tl.fromTo("#e-icon", { x: 560, y: -390, scale: 0.18, opacity: 0.0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.7, ease: "expo.out" }, 0.05);
+      tl.fromTo("#e-word", { xPercent: -105 }, { xPercent: 0, duration: 0.55, ease: "expo.out" }, 0.55);
+      tl.fromTo("#e-line", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 1.05);
+      tl.fromTo("#e-cta", { xPercent: -50, opacity: 0, filter: "blur(8px)" }, { xPercent: -50, opacity: 1, filter: "blur(0px)", duration: 0.2 }, 1.35);
+      window.__timelines["endcard"] = tl;
+    })();
+  </script>
+</template>

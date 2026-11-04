@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/menu.webp" width="560" alt="Trinetra menu: holding awake with the lid closed, three agents listed with live activity and a session summary, battery saved today">
+  <a href="https://animeshbasak.github.io/trinetra/#demo"><img src="docs/assets/demo.webp" width="760" alt="Demo: turning on lid mode in the Trinetra menu, the agent summary counting up, the system monitor tiles, and the Mac being released to sleep when the work ends"></a>
 </p>
 
 ---

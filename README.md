@@ -172,7 +172,13 @@ flowchart LR
 
 ## Install
 
-Requirements: macOS 13 Ventura or later, Xcode 15+, a free Apple ID signing team.
+Requirements, while there's no prebuilt download yet:
+
+| Requirement | Why |
+|---|---|
+| **macOS 13 Ventura or later** | The helper is registered with `SMAppService` and the menu is a SwiftUI `MenuBarExtra`. Both arrived in macOS 13 |
+| **Xcode 16+** | You build the app yourself, and the committed project uses the Xcode 16 format. XcodeGen users can regenerate it from `project.yml` |
+| **Free Apple ID signing team** | macOS only runs the root helper for a signed app, and the helper only obeys an app signed by the same team. A free Personal Team in Xcode is enough; no paid developer account |
 
 ```bash
 git clone https://github.com/animeshbasak/trinetra.git

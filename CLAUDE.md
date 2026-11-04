@@ -41,4 +41,5 @@ Sprint 1 done, lid mode runs through the SMAppService helper (LLD §13). Gemini 
 - No telemetry, no network calls except Telegram (Sprint 3) and toolkit modules whose purpose is the network (speed test, app updates, Homebrew), which say so.
 - Toolkit modules are off by default; a module that is off runs nothing. Never copy code or assets from GPL projects (Vorssaint included): Trinetra is MIT.
 - Swift: strict about optionals, no force-unwraps outside tests, no new dependencies without asking.
+- **Every push to `main` ships a HyperFrames demo of what changed.** Before pushing, build a short video (10–30 s) with HyperFrames showing the new features in the menu: local skills via `npx skills add heygen-com/hyperframes` (`/hyperframes`, render with `/hyperframes-cli`), or the HyperFrames MCP when the local skills aren't available. Commit an animated GIF/WebP (under ~5 MB) to `docs/assets/` and put it near the top of the README; put the MP4 on the Pages site (`docs/`). GitHub READMEs don't play committed MP4s.
 - Commit per sprint step with clear messages. Don't push or create the GitHub repo until Animesh says so.

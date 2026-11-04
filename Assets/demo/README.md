@@ -1,4 +1,7 @@
-# README demo (HyperFrames)
+# Demos (HyperFrames)
+
+- `./` — the README/site demo (`docs/assets/demo.webp`, `demo.mp4`)
+- `guide/` — the setup guide on the site (`docs/assets/guide.mp4`); same commands, run inside `guide/`
 
 Source of the demo at the top of the README (`docs/assets/demo.webp`, `docs/assets/demo.mp4`).
 `SPEC.md` is the brief; `compositions/menu.html` rebuilds the menu from `App/MenuContent.swift`.

@@ -1,0 +1,222 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #e7e2d8; font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; color: #1a1814; }
+    #g-noise { position: absolute; inset: 0; opacity: 0.05; }
+
+    /* left rail */
+    #g-head { position: absolute; left: 120px; top: 120px; width: 600px; font-weight: 700; font-size: 68px; letter-spacing: -0.03em; line-height: 1.05; }
+    .g-item { position: absolute; left: 120px; width: 600px; height: 100px; }
+    .g-badge { position: absolute; left: 0; top: 0; width: 52px; height: 52px; border-radius: 50%; background: #cfc8bb; color: #1a1814; font-weight: 700; font-size: 26px; }
+    .g-badge span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .g-badge .ok { opacity: 0; }
+    .g-title { position: absolute; left: 74px; top: 6px; font-size: 34px; font-weight: 700; letter-spacing: -0.015em; opacity: 0.35; white-space: nowrap; }
+    .g-detail { position: absolute; left: 74px; top: 52px; font-size: 28px; color: #5a5348; opacity: 0; white-space: nowrap; }
+
+    /* stage */
+    .g-stage { position: absolute; left: 760px; top: 0; width: 1040px; height: 1080px; display: flex; flex-direction: column; justify-content: center; }
+    .term { width: 1040px; border-radius: 16px; background: #1e1e22; box-shadow: 0 24px 60px rgba(26,24,20,0.28); overflow: hidden; }
+    .tbar { height: 46px; background: #2a2a2f; display: flex; align-items: center; gap: 9px; padding-left: 18px; }
+    .tbar i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+    .tbar b { margin-left: auto; margin-right: auto; transform: translateX(-30px); font-size: 20px; font-weight: 500; color: #9a9aa6; }
+    .tbody { padding: 26px 30px 34px; min-height: 380px; font-family: "JetBrains Mono", monospace; font-size: 25px; line-height: 1.55; color: #ececf1; }
+    .tbody .l { min-height: 1.55em; white-space: pre-wrap; word-break: break-all; }
+    .tbody .p { color: #f59e0b; }
+    .tbody .o { color: #a3a3ae; }
+    .tbody .g { color: #4ade80; }
+    .tbody .c { color: #7c7c88; }
+
+    /* step 4: the real menu, rebuilt */
+    #g-menu { width: 792px; margin-left: 124px; }
+    #g-mscale { width: 330px; transform: scale(2.4); transform-origin: 0 0; }
+    #g-panel { width: 330px; background: #2c2c30; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; color: #ececf1; box-shadow: 0 14px 36px rgba(0,0,0,0.35); }
+    .div { height: 1px; background: rgba(255,255,255,0.1); margin: 11px 0; }
+    .h { font-weight: 700; font-size: 13.5px; }
+    .cap { font-size: 12.5px; color: #a6a6b4; line-height: 1.38; }
+    .stack { position: relative; }
+    .stack > .alt { position: absolute; left: 0; top: 0; width: 100%; }
+    .toggle { display: flex; align-items: center; justify-content: space-between; font-size: 13.5px; margin-bottom: 4px; }
+    .sw { position: relative; width: 32px; height: 19px; border-radius: 10px; background: #55555c; display: block; }
+    #g-swon { position: absolute; inset: 0; border-radius: 10px; background: #3b82f6; opacity: 0; }
+    #g-knob { position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; }
+
+    /* step 5: the real Login Items screenshot */
+    #g-li-label { font-size: 30px; font-weight: 700; margin-bottom: 22px; letter-spacing: -0.01em; }
+    #g-li { position: relative; width: 1040px; height: 356px; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px rgba(26,24,20,0.28); }
+    #g-li img { width: 1040px; height: 356px; display: block; }
+    #g-li svg { position: absolute; inset: 0; width: 1040px; height: 356px; }
+
+    #g-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 68px; z-index: 50; }
+  </style>
+  <div id="root" data-composition-id="guide" data-width="1920" data-height="1080">
+    <svg id="g-noise" width="1920" height="1080" data-layout-ignore><filter id="g-n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1920" height="1080" filter="url(#g-n)"/></svg>
+
+    <div id="g-head">Set up<br>Trinetra</div>
+    <div class="g-item" id="g-i1" style="top:370px"><div class="g-badge"><span class="n">1</span><span class="ok">✓</span></div><div class="g-title">Install the CLI</div><div class="g-detail">Clone the repo, build trinetra</div></div>
+    <div class="g-item" id="g-i2" style="top:470px"><div class="g-badge"><span class="n">2</span><span class="ok">✓</span></div><div class="g-title">Connect your agents</div><div class="g-detail">Claude Code, Codex, Gemini, Cursor</div></div>
+    <div class="g-item" id="g-i3" style="top:570px"><div class="g-badge"><span class="n">3</span><span class="ok">✓</span></div><div class="g-title">Build the app</div><div class="g-detail">Xcode 16, free signing team</div></div>
+    <div class="g-item" id="g-i4" style="top:670px"><div class="g-badge"><span class="n">4</span><span class="ok">✓</span></div><div class="g-title">Turn on lid mode</div><div class="g-detail">One switch in the menu</div></div>
+    <div class="g-item" id="g-i5" style="top:770px"><div class="g-badge"><span class="n">5</span><span class="ok">✓</span></div><div class="g-title">Allow the helper once</div><div class="g-detail">Login Items › Allow in the Background</div></div>
+    <div class="g-item" id="g-i6" style="top:870px"><div class="g-badge"><span class="n">6</span><span class="ok">✓</span></div><div class="g-title">Turn on the monitor</div><div class="g-detail">Optional, off by default</div></div>
+
+    <!-- step 1 -->
+    <div id="g-s1" class="g-stage clip" data-start="2.8" data-duration="5.6" data-track-index="2">
+      <div class="term"><div class="tbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><b>Terminal — zsh</b></div>
+        <div class="tbody">
+          <div class="l"><span class="p">$ </span><span id="g-t1a"></span></div>
+          <div class="l"><span class="p">$ </span><span id="g-t1b"></span></div>
+          <div class="l g" id="g-o1">Installed /Users/you/.local/bin/trinetra</div>
+        </div></div>
+    </div>
+    <!-- step 2 -->
+    <div id="g-s2" class="g-stage clip" data-start="8.4" data-duration="6.6" data-track-index="2">
+      <div class="term"><div class="tbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><b>Terminal — zsh</b></div>
+        <div class="tbody">
+          <div class="l"><span class="p">$ </span><span id="g-t2a"></span></div>
+          <div class="l o" id="g-o2a">Backed up original to /Users/you/.claude/settings.json.trinetra.bak</div>
+          <div class="l g" id="g-o2b">Installed Claude Code hooks in /Users/you/.claude/settings.json</div>
+          <div class="l"><span class="p">$ </span><span id="g-t2b"></span></div>
+          <div class="l o" id="g-o2c">Codex asks you to review new hooks once: run `codex`, then `/hooks`, and trust Trinetra's entries.</div>
+          <div class="l"><span class="p">$ </span><span id="g-t2c"></span></div>
+        </div></div>
+    </div>
+    <!-- step 3 -->
+    <div id="g-s3" class="g-stage clip" data-start="15" data-duration="5.6" data-track-index="2">
+      <div class="term"><div class="tbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><b>Terminal — zsh</b></div>
+        <div class="tbody">
+          <div class="l"><span class="p">$ </span><span id="g-t3a"></span></div>
+          <div class="l c" id="g-o3a"># In Xcode: pick your team under Signing on both targets, then Run</div>
+          <div class="l"><span class="p">$ </span><span id="g-t3b"></span></div>
+          <div class="l"><span class="p">$ </span><span id="g-t3c"></span></div>
+        </div></div>
+    </div>
+    <!-- step 4 -->
+    <div id="g-s4" class="g-stage clip" data-start="20.6" data-duration="5" data-track-index="2">
+      <div id="g-menu"><div id="g-mscale"><div id="g-panel">
+        <div style="display:flex;gap:10px">
+          <svg width="18" height="18" viewBox="0 0 18 18" style="flex:none;margin-top:1px"><mask id="g-mk"><rect width="18" height="18" fill="#fff"/><ellipse cx="9" cy="9" rx="0.95" ry="2.1" fill="#000"/></mask><path d="M9 1.4 C12.3 4.1 13.7 6.7 13.7 9 C13.7 11.3 12.3 13.9 9 16.6 C5.7 13.9 4.3 11.3 4.3 9 C4.3 6.7 5.7 4.1 9 1.4 Z" fill="#fff" mask="url(#g-mk)"/></svg>
+          <div style="flex:1">
+            <div class="stack"><div id="g-h1" class="h">Holding awake · keep the lid open</div><div id="g-h2" class="h alt" style="opacity:0">Holding awake · lid can close</div></div>
+            <div class="cap">1 agent working</div>
+            <div class="cap">On battery · 80 %</div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="toggle"><span>Keep awake with the lid closed</span><span class="sw"><span id="g-swon"></span><span id="g-knob"></span></span></div>
+        <div class="stack">
+          <div id="g-l1" class="cap">Off. Trinetra keeps the Mac awake with the lid open only.</div>
+          <div id="g-l2" class="cap alt" style="opacity:0">Needs a one-time approval of Trinetra's helper.</div>
+        </div>
+      </div></div></div>
+    </div>
+    <!-- step 5 -->
+    <div id="g-s5" class="g-stage clip" data-start="25.6" data-duration="5.4" data-track-index="2">
+      <div id="g-li-label">System Settings › General › Login Items</div>
+      <div id="g-li">
+        <img src="assets/login-items.png" alt="Login Items with Trinetra allowed and running in background">
+        <svg viewBox="0 0 1040 356" data-layout-ignore><rect id="g-ring" x="10" y="112" width="1020" height="122" rx="16" fill="none" stroke="#f59e0b" stroke-width="5" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/></svg>
+      </div>
+    </div>
+    <!-- step 6 -->
+    <div id="g-s6" class="g-stage clip" data-start="31" data-duration="6" data-track-index="2">
+      <div class="term"><div class="tbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><b>Terminal — zsh</b></div>
+        <div class="tbody">
+          <div class="l"><span class="p">$ </span><span id="g-t6a"></span></div>
+          <div class="l g" id="g-o6a">System monitor: on. The app picks this up within a few seconds.</div>
+          <div class="l"><span class="p">$ </span><span id="g-t6b"></span></div>
+          <div class="l g" id="g-o6b">Health alerts: on. The app picks this up within a few seconds.</div>
+        </div></div>
+    </div>
+
+    <svg id="g-cursor" viewBox="0 0 23 34" data-layout-ignore><path d="M2 1.5 L2 26 L8 20.5 L12.2 30.5 L16.4 28.7 L12.3 19 L20.5 19 Z" fill="#111" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const outs = ["#g-o1", "#g-o2a", "#g-o2b", "#g-o2c", "#g-o3a", "#g-o6a", "#g-o6b"];
+      gsap.set(outs, { opacity: 0 });
+      gsap.set("#g-cursor", { x: 2000, y: 700 });
+
+      // typing: a counter per command line, text written from timeline time only
+      function type(id, text, at, dur) {
+        const el = document.querySelector(id);
+        el.textContent = "";
+        const o = { n: 0 };
+        tl.fromTo(o, { n: 0 }, { n: text.length, duration: dur, ease: "none", onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, at);
+      }
+      function show(id, at) { tl.fromTo(id, { opacity: 0 }, { opacity: 1, duration: 0.12 }, at); }
+
+      // rail
+      tl.fromTo("#g-head", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 0.2);
+      tl.fromTo(".g-item", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.15, stagger: 0.08 }, 0.6);
+      function activate(i, at) {
+        const it = "#g-i" + i;
+        tl.to(it + " .g-title", { opacity: 1, duration: 0.2 }, at);
+        tl.to(it + " .g-badge", { backgroundColor: "#b45309", color: "#ffffff", duration: 0.2 }, at);
+        tl.fromTo(it + " .g-detail", { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at + 0.1);
+      }
+      function complete(i, at) {
+        const it = "#g-i" + i;
+        tl.to(it + " .g-detail", { opacity: 0, duration: 0.15 }, at);
+        tl.to(it + " .g-title", { opacity: 0.6, duration: 0.2 }, at);
+        tl.to(it + " .g-badge", { backgroundColor: "#1a1814", duration: 0.2 }, at);
+        tl.to(it + " .n", { opacity: 0, duration: 0.1 }, at);
+        tl.to(it + " .ok", { opacity: 1, duration: 0.1 }, at + 0.05);
+      }
+      // stages swap with a blur on one stage, ground never cuts
+      function stage(id, start, dur) {
+        tl.fromTo(id + " > *", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, start + 0.02);
+        tl.to(id + " > *", { opacity: 0, filter: "blur(8px)", duration: 0.15 }, start + dur - 0.2);
+      }
+
+      // 1. install the CLI
+      activate(1, 2.8); stage("#g-s1", 2.8, 5.6);
+      type("#g-t1a", "git clone https://github.com/animeshbasak/trinetra.git", 3.2, 1.3);
+      type("#g-t1b", "cd trinetra && scripts/install-cli.sh", 4.8, 0.9);
+      show("#g-o1", 6.1);
+      complete(1, 8.3);
+
+      // 2. connect agents
+      activate(2, 8.4); stage("#g-s2", 8.4, 6.6);
+      type("#g-t2a", "trinetra hooks install claude", 8.8, 0.8);
+      show("#g-o2a", 9.9); show("#g-o2b", 10.15);
+      type("#g-t2b", "trinetra hooks install codex", 11.0, 0.8);
+      show("#g-o2c", 12.0);
+      type("#g-t2c", "trinetra hooks install gemini && trinetra hooks install cursor", 12.9, 1.3);
+      complete(2, 14.9);
+
+      // 3. build and install the app
+      activate(3, 15.0); stage("#g-s3", 15.0, 5.6);
+      type("#g-t3a", "open Trinetra.xcodeproj", 15.4, 0.6);
+      show("#g-o3a", 16.3);
+      type("#g-t3b", "ditto ~/Library/Developer/Xcode/DerivedData/Trinetra-*/Build/Products/Debug/Trinetra.app /Applications/Trinetra.app", 17.2, 1.6);
+      type("#g-t3c", "open /Applications/Trinetra.app", 19.1, 0.6);
+      complete(3, 20.5);
+
+      // 4. lid mode on
+      activate(4, 20.6); stage("#g-s4", 20.6, 5.0);
+      tl.fromTo("#g-cursor", { x: 2000, y: 760 }, { x: 1594, y: 686, duration: 0.8, ease: "power3.inOut" }, 21.3);
+      tl.to("#g-cursor", { scale: 0.88, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "0 0" }, 22.15);
+      tl.to("#g-knob", { x: 13, duration: 0.18, ease: "power3.out" }, 22.2);
+      tl.to("#g-swon", { opacity: 1, duration: 0.18 }, 22.2);
+      tl.to("#g-l1", { opacity: 0, filter: "blur(4px)", duration: 0.15 }, 22.3);
+      tl.fromTo("#g-l2", { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 22.4);
+      tl.to("#g-cursor", { x: 2000, y: 900, duration: 0.5, ease: "power3.in" }, 24.0);
+      complete(4, 25.5);
+
+      // 5. allow the helper (real screenshot), ring draws round Trinetra
+      activate(5, 25.6); stage("#g-s5", 25.6, 5.4);
+      tl.fromTo("#g-ring", { attr: { "stroke-dashoffset": 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: "power2.inOut" }, 26.4);
+      complete(5, 30.9);
+
+      // 6. modules
+      activate(6, 31.0); stage("#g-s6", 31.0, 6.0);
+      type("#g-t6a", "trinetra modules enable system-monitor", 31.4, 0.9);
+      show("#g-o6a", 32.5);
+      type("#g-t6b", "trinetra modules enable health-alerts", 33.3, 0.9);
+      show("#g-o6b", 34.4);
+      complete(6, 36.0);
+
+      window.__timelines["guide"] = tl;
+    })();
+  </script>
+</template>

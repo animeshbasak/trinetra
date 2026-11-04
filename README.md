@@ -175,6 +175,11 @@ flowchart LR
 
 ## Install
 
+<p align="center">
+  <a href="https://trinetra.animeshbasak.com/#setup"><img src="docs/assets/guide-poster.jpg" width="640" alt="Setup guide video: six steps from cloning the repo to turning on the system monitor"></a><br>
+  <sub>▶ <a href="https://trinetra.animeshbasak.com/#setup">Watch the 40-second setup guide</a>, made with HyperFrames</sub>
+</p>
+
 Requirements, while there's no prebuilt download yet:
 
 | Requirement | Why |

@@ -339,3 +339,17 @@ Roadmap and ground rules: [TOOLKIT.md](TOOLKIT.md). Every module is off by defau
 **App.** `SystemMonitor` (@MainActor) samples on a detached task: every 2 s while the menu is open or a readout is shown, every 10 s otherwise, never when the module is off (state and histories are dropped). It keeps 90-point histories (3 min at 2 s) for CPU, GPU, memory, hottest temperature, power and network. The menu shows a **System** block (six tiles with sparklines; tap for per-core bars, memory breakdown, battery health and cycles, disk, sensors, Activity Monitor) and each agent row gains "N % CPU". **Modules** at the bottom of the menu lists every module by group; unbuilt ones show their phase. The menu bar readout is pushed to `AppModel.readoutText` only when its text changes.
 
 **Alerts** (`HealthAlerts.evaluate`, pure): snapshot + thresholds + state → alerts. Defaults: CPU ≥ 90 % for 2 min (clears below 75 %), hottest sensor ≥ 95 °C (clears below 87 °C), thermal state serious/critical (clears at fair), memory pressure ≥ warning (clears at normal), < 10 GB free (clears at 12 GB), battery ≤ 20 % while draining (clears above 25 % or on power). Each condition warns once when it starts, and again only after it has cleared and 15 min have passed. Missing data never alerts. Posted with `UNUserNotificationCenter` (permission asked when the module is switched on; a denied permission is explained in the menu). Telegram delivery reuses these alerts when Sprint 3 lands.
+
+## 16. Battery floor, defence in depth (4 Nov 2026)
+
+**Incident.** With the lid closed on battery, a hold ran past the 10 % floor until the Mac shut down at 1 %. `pmset disablesleep 1` also suppresses macOS's own low-battery sleep, so the floor is the only thing standing between a closed Mac and a hard shutdown. Until now only the app enforced it, and the helper kept sleep disabled for as long as heartbeats arrived.
+
+**Likely causes** (not yet confirmed from logs): the app, a background `LSUIElement` process, was throttled by App Nap with the lid shut, so its 3 s tick and the floor check ran late or not at all; or the app's `lidHeld` flag fell out of sync with the system's `SleepDisabled` flag, so `setLid(false)` was never sent.
+
+**Changes.**
+- `HelperSafety` (TrinetraCore, pure, tested): `mustRestoreSleep(onAC:batteryPercent:thermalCritical:)` with a hard floor of 10 % on battery, plus thermal critical.
+- Helper: `enforceSafety()` runs every 10 s next to the dead-man check. It reads IOKit power sources itself (`PowerSourceReader`) and restores normal sleep at the floor, whatever the app is doing. `setLid(true)` is refused at the floor with a message the menu shows. The XPC surface is unchanged (still 4 methods, Bool arguments).
+- App: `LidPlanner.action(...)` (pure, tested) decides disable / restore / nothing from the app's belief **and** the live `SleepDisabled` flag, so an out-of-sync app still restores sleep when lid mode is on. Turning lid mode off restores sleep if either says it's disabled.
+- App: while holding, `ProcessInfo.beginActivity(.userInitiatedAllowingIdleSystemSleep)` opts out of App Nap so ticks and heartbeats keep their schedule with the lid closed.
+
+**Deploying.** The helper binary lives in the app bundle; after installing a new build, restart it once (`sudo killall TrinetraHelper`, launchd relaunches it from the new bundle) or reboot.

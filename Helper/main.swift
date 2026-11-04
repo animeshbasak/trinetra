@@ -4,7 +4,7 @@ import TrinetraCore
 // TrinetraHelper — root LaunchDaemon (Sprint 2). See architecture/LLD.md §9.
 // The entire privileged surface: run /usr/bin/pmset with one of four fixed argument lists.
 // No shell, no paths, no strings from the caller. Reverts on launch, when the app disconnects,
-// and on a missed heartbeat (dead-man switch).
+// on a missed heartbeat (dead-man switch), and on its own at the battery floor (LLD §16).
 
 enum PMSet {
     static func run(_ args: [String]) -> (Bool, String?) {
@@ -39,6 +39,15 @@ final class HelperState {
 
     func setLid(_ disabled: Bool) -> (Bool, String?) {
         queue.sync {
+            // Second line of defence (LLD §16): never disable lid sleep at the battery floor,
+            // whatever the app asks.
+            if disabled {
+                let power = PowerSourceReader.read()
+                if HelperSafety.mustRestoreSleep(onAC: power.onAC, batteryPercent: power.batteryPercent,
+                                                 thermalCritical: Self.thermalCritical) {
+                    return (false, HelperSafety.refusalMessage(batteryPercent: power.batteryPercent))
+                }
+            }
             let result = PMSet.disableSleep(disabled)
             if result.0 { lidSleepDisabled = disabled; lastHeartbeat = Date() }
             return result
@@ -67,6 +76,23 @@ final class HelperState {
             if PMSet.lowPower(false).0 { lowPower = false }
         }
     }
+
+    /// Battery floor and thermal cutout, enforced by the helper itself every 10 s (LLD §16).
+    /// Runs even if the app is napped, hung or out of sync, so a closed Mac can't drain to 0 %.
+    func enforceSafety() {
+        queue.sync {
+            guard lidSleepDisabled || lowPower else { return }
+            let power = PowerSourceReader.read()
+            guard HelperSafety.mustRestoreSleep(onAC: power.onAC, batteryPercent: power.batteryPercent,
+                                                thermalCritical: Self.thermalCritical) else { return }
+            NSLog("TrinetraHelper: battery %d%% on battery=%d thermalCritical=%d — restoring sleep",
+                  power.batteryPercent ?? -1, power.onAC ? 0 : 1, Self.thermalCritical ? 1 : 0)
+            if PMSet.disableSleep(false).0 { lidSleepDisabled = false }
+            if PMSet.lowPower(false).0 { lowPower = false }
+        }
+    }
+
+    static var thermalCritical: Bool { ProcessInfo.processInfo.thermalState == .critical }
 
     /// The app went away (quit, crash, rebuild): put normal sleep back immediately.
     func revertAll(reason: String) {
@@ -145,7 +171,10 @@ helperState.resetOnLaunch()
 
 let deadMan = DispatchSource.makeTimerSource(queue: .global())
 deadMan.schedule(deadline: .now() + 10, repeating: 10)
-deadMan.setEventHandler { helperState.checkDeadMan() }
+deadMan.setEventHandler {
+    helperState.enforceSafety()
+    helperState.checkDeadMan()
+}
 deadMan.resume()
 
 let delegate = ListenerDelegate(store: helperState, requirement: requirement)

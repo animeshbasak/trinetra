@@ -43,7 +43,7 @@ final class AppModel: ObservableObject {
             lidNote = nil
             if lidModeOn {
                 prepareHelper(openSettingsIfNeeded: true)
-            } else if lidHeld {
+            } else if lidHeld || sleepDisabled {
                 setLid(false)
             }
             tick()
@@ -61,6 +61,7 @@ final class AppModel: ObservableObject {
     private var holdStartedAt: Date?
     /// True while Trinetra has asked the helper to keep lid sleep off.
     private var lidHeld = false
+    private var napActivity: NSObjectProtocol?
     private var lidRequestInFlight = false
     private var sleepCheckInFlight = false
     private var timer: Timer?
@@ -150,6 +151,16 @@ final class AppModel: ObservableObject {
                 holds[i].onBatteryEnd = !power.onAC
                 saveHolds()
             }
+        }
+
+        // While holding, opt out of App Nap so ticks, heartbeats and the battery floor run on time
+        // with the lid closed (LLD §16).
+        if next.awake, napActivity == nil {
+            napActivity = ProcessInfo.processInfo.beginActivity(
+                options: .userInitiatedAllowingIdleSystemSleep, reason: "Trinetra is holding the Mac awake")
+        } else if !next.awake, let activity = napActivity {
+            ProcessInfo.processInfo.endActivity(activity)
+            napActivity = nil
         }
 
         do {
@@ -258,10 +269,12 @@ final class AppModel: ObservableObject {
                 if status == .ready { lidNote = nil }
             }
         }
-        if wanted, !lidHeld, !lidRequestInFlight, helperStatus == .ready {
-            setLid(true)
-        } else if !wanted, lidHeld, !lidRequestInFlight {
-            setLid(false)
+        switch LidPlanner.action(wanted: wanted, appHolds: lidHeld, systemSleepDisabled: sleepDisabled,
+                                 lidModeOn: lidModeOn, requestInFlight: lidRequestInFlight,
+                                 helperReady: helperStatus == .ready) {
+        case .disable: setLid(true)
+        case .restore: setLid(false)
+        case .none: break
         }
         if lidHeld, tickCount % 10 == 0 { lidGuard.heartbeat() } // every ~30 s; dead-man is 120 s
     }

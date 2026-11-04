@@ -57,7 +57,7 @@ Trinetra (Sanskrit for "three-eyed") watches your agents through their own hooks
 | 🔋 **Battery saved** | How long agents kept the Mac awake today, the battery that cost, and an estimate of battery saved by sleeping as soon as the work ended |
 | ⏱ **Timers** | 30m · 1h · 2h · 4h · Until I stop, for builds, downloads or anything without hooks |
 | ▶️ **Wrap any command** | `trinetra run -- ./train.sh` holds the Mac awake for exactly as long as the command runs |
-| 🛡 **Safe by default** | 10 % battery floor, thermal cutout, 12 h cap. Normal sleep comes back if the app quits, crashes or goes quiet for 2 minutes |
+| 🛡 **Safe by default** | 10 % battery floor and thermal cutout, enforced by the app **and** independently by the root helper, plus a 12 h cap. Normal sleep comes back if the app quits, crashes or goes quiet for 2 minutes |
 | 🌙 **Calm** | An animated third eye in the menu bar: open while holding, a blink now and then, closed when idle. Respects Reduce Motion |
 | 🩺 **System monitor** *(module)* | CPU per core, GPU, memory and pressure, temperatures, battery health and cycles, power draw, network and disk, with sparklines, plus the CPU each agent and its commands use. Optional readout next to the eye |
 | 🔔 **Health alerts** *(module)* | A notification when the Mac stays busy, runs hot, gets throttled, runs short of memory or disk, or the battery gets low |
